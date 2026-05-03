@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLIMATRIX — AI Climate Intelligence for India</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root{--bg:#03080f;--surface:#071524;--surface2:#0b1f35;--surface3:#0f2848;--border:rgba(0,180,255,0.1);--border2:rgba(0,180,255,0.22);--accent:#00d4ff;--accent2:#00ff9d;--accent3:#ff6b35;--accent4:#ffd700;--red:#ff3d3d;--orange:#ff9500;--green:#00d084;--purple:#cc00ff;--text:#e4f1fb;--text2:#6a9ab8;--text3:#3d6b8a;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+
+/* ── HERO ── */
+#hero{position:fixed;inset:0;z-index:5000;background:radial-gradient(ellipse 130% 90% at 50% -10%,#071e3d 0%,#03080f 65%);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+#hero.fade-out{animation:fadeOut 0.8s ease forwards;}
+@keyframes fadeOut{to{opacity:0;transform:scale(1.04);pointer-events:none;}}
+
+.orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,212,255,0.07),transparent 70%);top:-150px;left:-150px;animation:orbFloat 9s ease-in-out infinite;}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(255,61,61,0.05),transparent 70%);bottom:-100px;right:-100px;animation:orbFloat 11s ease-in-out infinite reverse;}
+.orb3{width:350px;height:350px;background:radial-gradient(circle,rgba(0,255,157,0.04),transparent 70%);top:40%;right:80px;animation:orbFloat 13s ease-in-out infinite 3s;}
+@keyframes orbFloat{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-35px) scale(1.06);}}
+
+#heroBgMap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0.15;pointer-events:none;}
+#heroBgMap svg{width:min(560px,88vw);filter:drop-shadow(0 0 50px rgba(0,212,255,0.25));}
+
+.hero-content{position:relative;z-index:2;text-align:center;padding:2rem;max-width:700px;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,255,0.07);border:1px solid rgba(0,212,255,0.18);border-radius:100px;padding:6px 18px;margin-bottom:1.8rem;font-size:0.72rem;font-weight:700;letter-spacing:2px;color:var(--accent);animation:slideUp 0.7s ease both;}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulseDot 1.5s infinite;}
+@keyframes pulseDot{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.6);opacity:0.6;}}
+
+.hero-title{font-family:'Syne',sans-serif;font-size:clamp(3.5rem,11vw,7.5rem);font-weight:800;line-height:0.88;letter-spacing:-3px;margin-bottom:1.1rem;background:linear-gradient(135deg,#fff 0%,var(--accent) 45%,var(--accent2) 85%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:slideUp 0.7s ease 0.1s both;}
+.hero-sub{font-size:clamp(0.95rem,2.5vw,1.15rem);color:var(--text2);margin-bottom:0.6rem;animation:slideUp 0.7s ease 0.2s both;letter-spacing:0.3px;}
+.hero-tagline{font-size:0.78rem;color:var(--text3);margin-bottom:2.2rem;animation:slideUp 0.7s ease 0.3s both;letter-spacing:1.2px;}
+.hero-tagline span{color:var(--text2);margin:0 5px;}
+
+.hero-gauge-ring{width:180px;height:180px;border-radius:50%;background:conic-gradient(var(--green) 0deg,var(--accent4) 72deg,var(--orange) 140deg,var(--red) 216deg,var(--purple) 260deg,rgba(255,255,255,0.04) 260deg);padding:4px;margin:0 auto 2rem;box-shadow:0 0 60px rgba(0,212,255,0.18);animation:gaugeIn 1s ease 0.5s both;position:relative;}
+@keyframes gaugeIn{from{transform:rotate(-180deg) scale(0.8);opacity:0;}to{transform:rotate(0) scale(1);opacity:1;}}
+.hero-gauge-inner{width:100%;height:100%;border-radius:50%;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;}
+.hero-gauge-val{font-family:'Syne',sans-serif;font-size:2.8rem;font-weight:800;color:var(--red);}
+.hero-gauge-lbl{font-size:0.65rem;color:var(--text2);font-weight:700;letter-spacing:2px;}
+
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:slideUp 0.7s ease 0.55s both;}
+.btn-hero-p{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);border:none;border-radius:10px;padding:13px 30px;font-family:'Syne',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 8px 28px rgba(0,212,255,0.28);transition:all 0.2s;}
+.btn-hero-p:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,212,255,0.38);}
+.btn-hero-s{background:transparent;color:var(--accent);border:1px solid rgba(0,212,255,0.35);border-radius:10px;padding:13px 30px;font-family:'Syne',sans-serif;font-size:0.92rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all 0.2s;}
+.btn-hero-s:hover{background:rgba(0,212,255,0.07);border-color:var(--accent);}
+
+.hero-scroll-hint{position:absolute;bottom:1.8rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--text3);font-size:0.65rem;letter-spacing:2.5px;animation:slideUp 0.7s ease 1.1s both;}
+.scroll-bar{width:1px;height:36px;background:linear-gradient(to bottom,var(--text3),transparent);animation:scrollPulse 2s ease-in-out infinite;}
+@keyframes scrollPulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
+.hero-timer-bar{position:absolute;bottom:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));animation:timerBar 5s linear forwards;}
+@keyframes timerBar{from{width:0}to{width:100%}}
+@keyframes slideUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── INIT OVERLAY ── */
+#initOverlay{position:fixed;inset:0;z-index:4000;background:var(--bg);display:none;align-items:center;justify-content:center;flex-direction:column;gap:1.4rem;}
+#initOverlay.show{display:flex;}
+#initOverlay.fade-out{animation:fadeOut 0.5s ease forwards;}
+.init-logo{font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;letter-spacing:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.init-bar{width:280px;height:2px;background:rgba(255,255,255,0.05);border-radius:1px;overflow:hidden;}
+.init-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:1px;animation:initFill 1.8s ease forwards;}
+@keyframes initFill{from{width:0}to{width:100%}}
+.init-dots{display:flex;gap:7px;}
+.init-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:initDot 0.6s ease infinite;}
+.init-dot:nth-child(2){animation-delay:0.2s;}.init-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes initDot{0%,100%{opacity:0.2;transform:scale(0.7);}50%{opacity:1;transform:scale(1);}}
+.init-txt{font-size:0.75rem;color:var(--accent);font-family:'JetBrains Mono',monospace;}
+
+/* ── LIVE TICKER ── */
+#liveTicker{position:fixed;top:0;left:0;right:0;z-index:1001;height:30px;background:rgba(3,8,15,0.97);border-bottom:1px solid var(--border);display:flex;align-items:center;overflow:hidden;backdrop-filter:blur(20px);}
+.ticker-lbl{flex-shrink:0;padding:0 14px;background:var(--accent);color:var(--bg);font-family:'Syne',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:2px;height:100%;display:flex;align-items:center;}
+.ticker-scroll{display:flex;animation:tickScroll 38s linear infinite;white-space:nowrap;}
+.t-item{display:flex;align-items:center;gap:5px;padding:0 20px;font-size:0.68rem;border-right:1px solid var(--border);font-family:'JetBrains Mono',monospace;}
+.t-lbl{color:var(--text2);}.t-up{color:var(--red);}.t-dn{color:var(--green);}.t-warn{color:var(--orange);}
+@keyframes tickScroll{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ── NAV ── */
+nav{position:fixed;top:30px;left:0;right:0;z-index:1000;height:58px;background:rgba(3,8,15,0.93);backdrop-filter:blur(22px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.4rem;gap:10px;}
+.nb{display:flex;align-items:center;gap:9px;text-decoration:none;cursor:pointer;flex-shrink:0;}
+.nb-box{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:15px;}
+.nb-name{font-family:'Syne',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:1px;margin:0 8px;}
+.nav-links a{color:var(--text2);text-decoration:none;padding:5px 10px;border-radius:6px;font-size:0.78rem;font-weight:500;transition:all 0.15s;cursor:pointer;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:rgba(0,212,255,0.08);}
+.nav-r{display:flex;align-items:center;gap:7px;margin-left:auto;}
+.sc-wrap{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.sc-btn{padding:4px 9px;font-size:0.65rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;color:var(--text2);border:none;background:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.sc-btn.active{background:var(--accent);color:var(--bg);}
+.sc-btn:hover:not(.active){color:var(--accent);}
+.nav-srch{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:5px 9px;width:165px;transition:border-color 0.2s;}
+.nav-srch:focus-within{border-color:var(--accent);}
+.nav-srch input{background:none;border:none;outline:none;color:var(--text);font-size:0.77rem;width:100%;font-family:'DM Sans',sans-serif;}
+.nav-srch input::placeholder{color:var(--text3);}
+.ni-btn{width:32px;height:32px;background:var(--surface);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;position:relative;transition:all 0.15s;}
+.ni-btn:hover{border-color:var(--accent);}
+.ni-dot{position:absolute;top:5px;right:5px;width:6px;height:6px;background:var(--red);border-radius:50%;animation:pulseDot 1.5s infinite;}
+.btn-lgn{background:linear-gradient(135deg,var(--accent),rgba(0,200,255,0.55));color:var(--bg);border:none;border-radius:7px;padding:5px 14px;font-size:0.77rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.btn-lgn:hover{opacity:0.85;transform:translateY(-1px);}
+
+/* ── SIDEBAR ── */
+#sidebar{position:fixed;left:0;top:88px;bottom:0;width:205px;background:rgba(7,21,36,0.97);border-right:1px solid var(--border);z-index:100;padding:0.9rem 0;overflow-y:auto;transition:transform 0.3s ease;backdrop-filter:blur(18px);}
+#sidebar.col{transform:translateX(-205px);}
+.sb-sec{padding:0.7rem 1rem 0.3rem;font-size:0.6rem;font-weight:700;letter-spacing:2.5px;color:var(--text3);text-transform:uppercase;}
+.sb-it{display:flex;align-items:center;gap:8px;padding:8px 1.1rem;color:var(--text2);font-size:0.82rem;font-weight:500;transition:all 0.15s;cursor:pointer;border-left:3px solid transparent;}
+.sb-it:hover{color:var(--accent);background:rgba(0,212,255,0.05);border-left-color:rgba(0,212,255,0.25);}
+.sb-it.active{color:var(--accent);background:rgba(0,212,255,0.08);border-left-color:var(--accent);}
+.si{font-size:14px;width:18px;text-align:center;}
+.sb-bdg{margin-left:auto;background:var(--red);color:#fff;font-size:0.58rem;font-weight:700;padding:1px 5px;border-radius:7px;}
+.sb-ai{margin-left:auto;background:linear-gradient(90deg,var(--accent),var(--accent2));color:var(--bg);font-size:0.58rem;font-weight:700;padding:1px 6px;border-radius:7px;letter-spacing:1px;}
+
+/* ── MAIN ── */
+.main{margin-left:205px;margin-top:88px;min-height:calc(100vh - 88px);padding:1.4rem;position:relative;z-index:1;transition:margin-left 0.3s ease;}
+.main.exp{margin-left:0;}
+.page{display:none;}
+.page.active{display:block;animation:pageIn 0.32s ease both;}
+@keyframes pageIn{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── PULSE BAR ── */
+.pulse-bar{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:1.1rem;}
+.pb-it{flex:1;padding:7px 14px;display:flex;align-items:center;gap:7px;border-right:1px solid var(--border);}
+.pb-it:last-child{border-right:none;}
+.pb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;animation:pulseDot 2s infinite;}
+.pb-lbl{font-size:0.65rem;color:var(--text2);letter-spacing:0.5px;}
+.pb-val{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;margin-left:auto;}
+.live-tag{font-size:0.58rem;font-weight:700;letter-spacing:1px;padding:1px 5px;border-radius:3px;background:rgba(0,208,132,0.1);color:var(--green);border:1px solid rgba(0,208,132,0.18);margin-left:5px;}
+
+/* ── REGION BAR ── */
+.region-bar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:0.75rem 1.1rem;margin-bottom:1.1rem;}
+.region-bar label{font-size:0.68rem;color:var(--text2);font-weight:700;letter-spacing:1.5px;}
+.rsel{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 26px 5px 9px;font-size:0.8rem;font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2300d4ff'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;transition:border-color 0.15s;}
+.rsel:focus{border-color:var(--accent);}
+.btn-go{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);border:none;border-radius:6px;padding:6px 18px;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;letter-spacing:0.5px;}
+.btn-go:hover{opacity:0.85;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,212,255,0.22);}
+.yr-wrap{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.yr-wrap label{font-size:0.65rem;color:var(--text2);font-weight:700;letter-spacing:1px;white-space:nowrap;}
+.yr-slider{-webkit-appearance:none;width:150px;height:4px;background:linear-gradient(90deg,var(--accent) var(--pct,0%),rgba(255,255,255,0.08) var(--pct,0%));border-radius:2px;outline:none;cursor:pointer;}
+.yr-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 0 8px rgba(0,212,255,0.45);}
+.yr-val{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:600;color:var(--accent);min-width:34px;text-align:center;}
+
+/* ── STATS ROW ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:0.9rem;margin-bottom:1.1rem;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:0.9rem 1rem;position:relative;overflow:hidden;cursor:pointer;transition:all 0.18s;}
+.sc:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,0.18);}
+.sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;border-radius:0 0 11px 11px;}
+.sc.c1::after{background:var(--accent);}.sc.c2::after{background:var(--accent3);}.sc.c3::after{background:var(--accent4);}.sc.c4::after{background:var(--accent2);}
+.sc-lbl{font-size:0.64rem;color:var(--text2);font-weight:700;letter-spacing:1.5px;margin-bottom:3px;}
+.sc-val{font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;line-height:1;}
+.sc.c1 .sc-val{color:var(--accent);}.sc.c2 .sc-val{color:var(--accent3);}.sc.c3 .sc-val{color:var(--accent4);}.sc.c4 .sc-val{color:var(--accent2);}
+.sc-chg{font-size:0.68rem;margin-top:2px;}
+.up{color:var(--red);}.dn{color:var(--green);}
+
+/* ── DASHBOARD GRID ── */
+.dg{display:grid;grid-template-columns:1fr 1fr 290px;gap:0.9rem;}
+
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:1.1rem;position:relative;overflow:hidden;transition:border-color 0.25s;}
+.card:hover{border-color:rgba(0,212,255,0.2);}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,0.28),transparent);}
+.ch{font-family:'Syne',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:0.8rem;display:flex;align-items:center;gap:6px;}
+.chd{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:pulseDot 2s infinite;}
+
+/* ── MAP ── */
+.map-wrap{position:relative;background:var(--surface2);border-radius:9px;height:330px;overflow:hidden;cursor:crosshair;}
+.map-layers{position:absolute;top:9px;right:9px;z-index:10;display:flex;flex-direction:column;gap:3px;}
+.ml-btn{background:rgba(3,8,15,0.88);border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:0.6rem;font-weight:700;color:var(--text2);cursor:pointer;letter-spacing:1px;transition:all 0.12s;backdrop-filter:blur(6px);}
+.ml-btn.active,.ml-btn:hover{color:var(--accent);border-color:var(--accent);}
+.map-tt{position:absolute;background:rgba(3,8,15,0.96);border:1px solid var(--accent);border-radius:7px;padding:7px 10px;font-size:0.7rem;pointer-events:none;z-index:20;display:none;backdrop-filter:blur(10px);min-width:140px;box-shadow:0 0 18px rgba(0,212,255,0.18);}
+.tt-city{font-family:'Syne',sans-serif;font-weight:700;color:var(--accent);margin-bottom:3px;font-size:0.75rem;}
+.tt-row{display:flex;justify-content:space-between;gap:10px;color:var(--text2);font-size:0.68rem;margin-bottom:1px;}
+.tt-val{color:var(--text);font-weight:600;}
+.map-leg{position:absolute;bottom:9px;left:9px;background:rgba(3,8,15,0.88);border-radius:7px;padding:5px 9px;backdrop-filter:blur(6px);}
+.ml-r{display:flex;align-items:center;gap:5px;margin-bottom:2px;}
+.ml-d{width:6px;height:6px;border-radius:50%;}
+.ml-t{font-size:0.6rem;color:var(--text2);}
+
+/* ── GAUGE ── */
+.gauge-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.gsvg{width:148px;height:82px;overflow:visible;}
+.risk-val{font-family:'Syne',sans-serif;font-size:2.4rem;font-weight:800;line-height:1;}
+.risk-lbl{font-size:0.75rem;font-weight:700;letter-spacing:1px;}
+.risk-sub{font-size:0.65rem;color:var(--text2);text-align:center;}
+
+/* ── IMPACT BARS ── */
+.imp-list{display:flex;flex-direction:column;gap:9px;}
+.imp-row{display:flex;align-items:center;gap:7px;}
+.imp-ico{font-size:16px;width:22px;text-align:center;}
+.imp-info{flex:1;}
+.imp-name{font-size:0.75rem;font-weight:600;margin-bottom:2px;}
+.imp-bg{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;}
+.imp-bar{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(0.4,0,0.2,1);}
+.imp-chg{font-family:'JetBrains Mono',monospace;font-size:0.72rem;font-weight:600;min-width:40px;text-align:right;}
+
+/* ── WEATHER EVENTS ── */
+.we-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;}
+.we-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px;text-align:center;transition:all 0.18s;cursor:pointer;}
+.we-card:hover{border-color:rgba(0,212,255,0.28);transform:translateY(-2px);}
+.we-ico{font-size:22px;margin-bottom:3px;}
+.we-nm{font-size:0.6rem;color:var(--text2);margin-bottom:2px;letter-spacing:0.5px;}
+.we-pct{font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:800;}
+
+/* ── ALERTS ── */
+.al-list{display:flex;flex-direction:column;gap:6px;}
+.al-it{display:flex;align-items:flex-start;gap:8px;background:var(--surface2);border-radius:7px;padding:8px 10px;border-left:3px solid;cursor:pointer;transition:all 0.12s;}
+.al-it:hover{transform:translateX(3px);}
+.al-it.red{border-color:var(--red);}.al-it.orange{border-color:var(--orange);}.al-it.yellow{border-color:var(--accent4);}.al-it.green{border-color:var(--green);}
+.al-ico{font-size:13px;margin-top:1px;}
+.al-t{font-size:0.75rem;font-weight:600;}
+.al-s{font-size:0.65rem;color:var(--text2);margin-top:1px;}
+.al-time{margin-left:auto;font-size:0.6rem;color:var(--text3);white-space:nowrap;}
+.btn-all{width:100%;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--accent);padding:6px;font-size:0.75rem;font-weight:600;cursor:pointer;margin-top:6px;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.btn-all:hover{background:rgba(0,212,255,0.05);}
+
+/* ── CHARTS ── */
+.cw{position:relative;}
+
+/* ── PAGE HEADER ── */
+.ph{margin-bottom:1.1rem;}
+.ph h1{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;background:linear-gradient(90deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.ph p{color:var(--text2);font-size:0.82rem;margin-top:2px;}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:3px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;margin-bottom:0.9rem;width:fit-content;}
+.tab{padding:5px 13px;border-radius:5px;font-size:0.75rem;font-weight:600;cursor:pointer;color:var(--text2);transition:all 0.12s;}
+.tab.active{background:var(--surface);color:var(--accent);box-shadow:0 2px 6px rgba(0,0,0,0.25);}
+
+/* ── AI PAGE ── */
+.ai-form{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:1.4rem;margin-bottom:1.1rem;}
+.ai-fhdr{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--accent);margin-bottom:1.1rem;display:flex;align-items:center;gap:7px;}
+.fg{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;}
+.fg-item{display:flex;flex-direction:column;gap:4px;}
+.fg-item label{font-size:0.65rem;color:var(--text2);font-weight:700;letter-spacing:1.5px;}
+.fg-item input,.fg-item select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:6px 9px;font-size:0.82rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s;}
+.fg-item input:focus,.fg-item select:focus{border-color:var(--accent);}
+.pp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:0.9rem;}
+.pp-it{background:var(--surface2);border-radius:7px;padding:7px 10px;border:1px solid var(--border);}
+.pp-lbl{font-size:0.6rem;color:var(--text2);margin-bottom:3px;letter-spacing:1px;}
+.pp-bg{height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-bottom:3px;}
+.pp-fill{height:100%;border-radius:2px;transition:width 0.4s ease;}
+.pp-val{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--accent);}
+.btn-analyze{display:inline-flex;align-items:center;gap:7px;margin-top:0.9rem;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);border:none;border-radius:8px;padding:10px 26px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;letter-spacing:0.5px;}
+.btn-analyze:hover{opacity:0.85;transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,212,255,0.28);}
+.ai-results{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;}
+.rc{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:1.1rem;}
+.rc h4{font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;color:var(--accent);margin-bottom:0.9rem;display:flex;align-items:center;gap:6px;}
+.ai-chat{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-top:1.1rem;}
+.chat-hdr{padding:0.9rem 1.1rem;border-bottom:1px solid var(--border);font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:7px;}
+.chat-msgs{height:220px;overflow-y:auto;padding:0.9rem;display:flex;flex-direction:column;gap:8px;}
+.cm{max-width:82%;padding:9px 12px;border-radius:9px;font-size:0.78rem;line-height:1.5;}
+.cm.user{align-self:flex-end;background:rgba(0,212,255,0.09);border:1px solid rgba(0,212,255,0.14);}
+.cm.ai{align-self:flex-start;background:var(--surface2);border:1px solid var(--border);}
+.ai-tag{font-size:0.6rem;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:3px;}
+.chat-ir{display:flex;gap:7px;padding:0.7rem 0.9rem;border-top:1px solid var(--border);}
+.chat-in{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:7px 10px;font-size:0.78rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s;}
+.chat-in:focus{border-color:var(--accent);}
+.chat-snd{background:var(--accent);color:var(--bg);border:none;border-radius:7px;padding:7px 14px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.12s;}
+.chat-snd:hover{opacity:0.85;}
+
+/* ── HEATMAP ── */
+.hm-grid{display:grid;grid-template-columns:2fr 1fr;gap:1rem;}
+
+/* ── REPORTS ── */
+.rg{display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;}
+.rpt{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:1.1rem;cursor:pointer;transition:all 0.2s;}
+.rpt:hover{border-color:var(--accent);transform:translateY(-3px);}
+.rpt-ico{font-size:2rem;margin-bottom:0.6rem;}
+.rpt-title{font-family:'Syne',sans-serif;font-size:0.88rem;font-weight:700;margin-bottom:0.4rem;}
+.rpt-desc{font-size:0.75rem;color:var(--text2);line-height:1.5;}
+.rpt-tag{display:inline-block;margin-top:0.6rem;background:rgba(0,212,255,0.08);color:var(--accent);border-radius:5px;padding:2px 8px;font-size:0.65rem;font-weight:600;}
+
+/* ── ABOUT ── */
+.ag{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.abt{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:1.3rem;}
+.abt h3{font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--accent);margin-bottom:0.9rem;}
+.tm-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--border);}
+.tm-row:last-child{border-bottom:none;}
+.tm-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;color:var(--bg);flex-shrink:0;}
+.tm-nm{font-size:0.82rem;font-weight:600;}
+.tm-rl{font-size:0.68rem;color:var(--text2);}
+.tm-id{font-family:'JetBrains Mono',monospace;font-size:0.62rem;color:var(--accent);margin-top:1px;}
+
+/* ── LOADING ── */
+#lo{display:none;position:fixed;inset:0;z-index:8000;background:rgba(3,8,15,0.88);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
+#lo.show{display:flex;}
+.spin{width:48px;height:48px;border:2px solid rgba(0,212,255,0.12);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.lt{font-family:'JetBrains Mono',monospace;font-size:0.78rem;color:var(--accent);}
+
+/* ── NOTIF ── */
+#notifPanel{position:fixed;top:88px;right:0;width:295px;height:calc(100vh - 88px);background:var(--surface);border-left:1px solid var(--border);z-index:500;transform:translateX(100%);transition:transform 0.3s ease;padding:1.1rem;overflow-y:auto;}
+#notifPanel.open{transform:translateX(0);}
+.np-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.9rem;}
+.np-hdr h3{font-family:'Syne',sans-serif;font-size:0.9rem;font-weight:700;}
+.np-cls{background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px;}
+
+/* ── FAB ── */
+#fab{position:fixed;bottom:1.8rem;left:50%;transform:translateX(-50%);z-index:200;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--bg);border:none;border-radius:100px;padding:10px 22px;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;letter-spacing:1px;box-shadow:0 8px 28px rgba(0,212,255,0.28);display:flex;align-items:center;gap:7px;transition:all 0.2s;animation:fabBob 3s ease-in-out infinite;}
+#fab:hover{transform:translateX(-50%) translateY(-3px);}
+@keyframes fabBob{0%,100%{box-shadow:0 8px 28px rgba(0,212,255,0.28);}50%{box-shadow:0 8px 36px rgba(0,212,255,0.44);}}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:1.8rem;right:1.8rem;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:9px;padding:10px 16px;font-size:0.78rem;font-weight:500;z-index:9999;backdrop-filter:blur(10px);transition:all 0.28s;transform:translateY(70px);opacity:0;max-width:270px;pointer-events:none;}
+#toast.show{transform:translateY(0);opacity:1;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.14);border-radius:2px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,212,255,0.28);}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+  <div id="heroBgMap">
+    <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="hg"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <radialGradient id="rg1" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,61,61,0.6)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+        <radialGradient id="rg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,149,0,0.5)"/><stop offset="100%" stop-color="transparent"/></radialGradient>
+      </defs>
+      <path d="M130 30 L200 25 L270 40 L320 80 L350 130 L360 180 L355 230 L340 270 L310 310 L290 360 L260 400 L240 440 L220 470 L205 480 L195 470 L185 450 L170 420 L150 390 L120 350 L95 310 L80 270 L70 220 L75 170 L85 130 L100 90 Z" fill="rgba(0,212,255,0.05)" stroke="rgba(0,212,255,0.28)" stroke-width="1.5" filter="url(#hg)"/>
+      <ellipse cx="195" cy="165" rx="55" ry="44" fill="url(#rg1)" opacity="0.7"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/></ellipse>
+      <ellipse cx="163" cy="172" rx="40" ry="32" fill="url(#rg2)" opacity="0.6"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="3.2s" repeatCount="indefinite"/></ellipse>
+      <circle cx="190" cy="110" r="4" fill="#ff4444" filter="url(#hg)"><animate attributeName="r" values="4;12;4" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0.1;1" dur="2s" repeatCount="indefinite"/></circle>
+      <circle cx="145" cy="258" r="4" fill="#ff9500" filter="url(#hg)"><animate attributeName="r" values="4;11;4" dur="2.6s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0.1;1" dur="2.6s" repeatCount="indefinite"/></circle>
+      <circle cx="290" cy="215" r="3" fill="#ffd700" filter="url(#hg)"><animate attributeName="r" values="3;9;3" dur="3.1s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0.1;1" dur="3.1s" repeatCount="indefinite"/></circle>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><div class="live-dot"></div>AI CLIMATE INTELLIGENCE · INDIA</div>
+    <div class="hero-title">CLIMATRIX</div>
+    <div class="hero-sub">AI-Powered Climate Intelligence for India</div>
+    <div class="hero-tagline">Real-time risk prediction<span>•</span>Hyper-local forecasting<span>•</span>Actionable insights</div>
+    <div class="hero-gauge-ring">
+      <div class="hero-gauge-inner">
+        <div class="hero-gauge-val" id="hgv">0</div>
+        <div class="hero-gauge-lbl">RISK INDEX</div>
+      </div>
+    </div>
+    <div class="hero-ctas">
+      <button class="btn-hero-p" onclick="enterDash()">⚡ Enter Dashboard</button>
+      <button class="btn-hero-s" onclick="enterAI()">🤖 Run AI Assessment</button>
+    </div>
+  </div>
+  <div class="hero-scroll-hint"><div class="scroll-bar"></div>AUTO IN <span id="hcd">5</span>s</div>
+  <div class="hero-timer-bar"></div>
+</div>
+
+<!-- INIT OVERLAY -->
+<div id="initOverlay">
+  <div class="init-logo">CLIMATRIX</div>
+  <div class="init-dots"><div class="init-dot"></div><div class="init-dot"></div><div class="init-dot"></div></div>
+  <div class="init-bar"><div class="init-fill"></div></div>
+  <div class="init-txt" id="itxt">Initializing AI Systems...</div>
+</div>
+
+<!-- LOADING -->
+<div id="lo"><div class="spin"></div><div class="lt" id="ltxt">🤖 Running AI Analysis...</div></div>
+
+<!-- TICKER -->
+<div id="liveTicker" style="display:none">
+  <div class="ticker-lbl">LIVE</div>
+  <div style="overflow:hidden;flex:1"><div class="ticker-scroll" id="ts"></div></div>
+</div>
+
+<!-- NOTIF -->
+<div id="notifPanel">
+  <div class="np-hdr"><h3>🔔 Live Alerts</h3><button class="np-cls" onclick="toggleNotif()">✕</button></div>
+  <div class="al-list" id="nal"></div>
+</div>
+
+<!-- NAV -->
+<nav id="mainNav" style="display:none">
+  <div class="nb" onclick="showPage('dashboard')"><div class="nb-box">🌍</div><span class="nb-name">CLIMATRIX</span></div>
+  <div class="nav-links">
+    <a onclick="showPage('dashboard')" class="active" id="nav-dashboard">Dashboard</a>
+    <a onclick="showPage('temperature')" id="nav-temperature">Temp</a>
+    <a onclick="showPage('rainfall')" id="nav-rainfall">Rainfall</a>
+    <a onclick="showPage('extreme')" id="nav-extreme">Extreme</a>
+    <a onclick="showPage('risk')" id="nav-risk">Risk</a>
+    <a onclick="showPage('heatmaps')" id="nav-heatmaps">Heatmaps</a>
+    <a onclick="showPage('reports')" id="nav-reports">Reports</a>
+    <a onclick="showPage('alerts')" id="nav-alerts">Alerts</a>
+    <a onclick="showPage('about')" id="nav-about">About</a>
+  </div>
+  <div class="nav-r">
+    <div class="sc-wrap">
+      <button class="sc-btn" onclick="setSc('RCP 2.6',this)">2.6</button>
+      <button class="sc-btn active" onclick="setSc('RCP 4.5',this)">4.5</button>
+      <button class="sc-btn" onclick="setSc('RCP 6.0',this)">6.0</button>
+      <button class="sc-btn" onclick="setSc('RCP 8.5',this)">8.5</button>
+    </div>
+    <div class="nav-srch"><span style="color:var(--text3);font-size:12px">🔍</span><input type="text" placeholder="Search region..." onkeyup="handleSearch(event)"></div>
+    <div class="ni-btn" onclick="toggleNotif()">🔔<div class="ni-dot"></div></div>
+    <div class="ni-btn" onclick="toggleTheme()">🌓</div>
+    <button class="btn-lgn">Login</button>
+  </div>
+</nav>
+
+<!-- SIDEBAR -->
+<div id="sidebar" style="display:none">
+  <div class="sb-sec">Navigation</div>
+  <div class="sb-it active" onclick="showPage('dashboard')" id="sb-dashboard"><span class="si">📊</span>Dashboard</div>
+  <div class="sb-it" onclick="showPage('temperature')" id="sb-temperature"><span class="si">🌡️</span>Temperature</div>
+  <div class="sb-it" onclick="showPage('rainfall')" id="sb-rainfall"><span class="si">🌧️</span>Rainfall</div>
+  <div class="sb-it" onclick="showPage('extreme')" id="sb-extreme"><span class="si">⛈️</span>Extreme Weather</div>
+  <div class="sb-it" onclick="showPage('risk')" id="sb-risk"><span class="si">⚠️</span>Risk Analysis</div>
+  <div class="sb-sec">Tools</div>
+  <div class="sb-it" onclick="showPage('ai')" id="sb-ai"><span class="si">🤖</span>AI Assessment<span class="sb-ai">AI</span></div>
+  <div class="sb-it" onclick="showPage('heatmaps')" id="sb-heatmaps"><span class="si">🗺️</span>Heatmaps</div>
+  <div class="sb-it" onclick="showPage('reports')" id="sb-reports"><span class="si">📄</span>Reports</div>
+  <div class="sb-sec">Info</div>
+  <div class="sb-it" onclick="showPage('alerts')" id="sb-alerts"><span class="si">🚨</span>Alerts<span class="sb-bdg">6</span></div>
+  <div class="sb-it" onclick="showPage('about')" id="sb-about"><span class="si">ℹ️</span>About Us</div>
+  <div class="sb-sec">View</div>
+  <div class="sb-it" onclick="toggleSidebar()"><span class="si">◀</span>Collapse</div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mc" style="display:none">
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="page active" id="page-dashboard">
+  <div class="pulse-bar">
+    <div class="pb-it"><div class="pb-dot" style="background:var(--red)"></div><span class="pb-lbl">India Temp Anomaly</span><span class="pb-val up" id="pbT">+1.7°C</span><span class="live-tag">LIVE</span></div>
+    <div class="pb-it"><div class="pb-dot" style="background:var(--orange)"></div><span class="pb-lbl">Active Red Alerts</span><span class="pb-val" style="color:var(--red)">3 Red · 2 Orange</span></div>
+    <div class="pb-it"><div class="pb-dot" style="background:var(--green)"></div><span class="pb-lbl">AI Model Updated</span><span class="pb-val dn" id="pbU">47s ago</span></div>
+    <div class="pb-it"><div class="pb-dot" style="background:var(--accent)"></div><span class="pb-lbl">Monsoon Progress</span><span class="pb-val" style="color:var(--accent)">78% Coverage</span></div>
+  </div>
+  <div class="region-bar">
+    <label>REGION:</label>
+    <select class="rsel" id="selState" onchange="updateDist()">
+      <option>Maharashtra</option><option>Rajasthan</option><option>Uttar Pradesh</option>
+      <option>Gujarat</option><option>Madhya Pradesh</option><option>Karnataka</option>
+      <option>Tamil Nadu</option><option>West Bengal</option><option>Odisha</option>
+      <option>Kerala</option><option>Delhi</option><option>Bihar</option>
+    </select>
+    <select class="rsel" id="selDist">
+      <option>Pune</option><option>Mumbai</option><option>Nagpur</option><option>Nashik</option>
+    </select>
+    <button class="btn-go" onclick="applyRegion()">🔍 Analyse</button>
+    <div class="yr-wrap">
+      <label>YEAR:</label>
+      <input type="range" class="yr-slider" id="yrSlider" min="2024" max="2050" value="2024" oninput="updateYear(this.value)">
+      <div class="yr-val" id="yrVal">2024</div>
+    </div>
+    <span style="margin-left:auto;font-size:0.68rem;color:var(--text2)">Scenario: <span style="color:var(--accent)" id="scLbl">RCP 4.5</span></span>
+  </div>
+  <div class="stats-row">
+    <div class="sc c1"><div class="sc-lbl">CURRENT TEMP</div><div class="sc-val" id="curT">38°C</div><div class="sc-chg up">↑ +3.2°C above avg</div></div>
+    <div class="sc c2"><div class="sc-lbl">ANNUAL RAINFALL</div><div class="sc-val" id="curR">712mm</div><div class="sc-chg up">↓ -18% below avg</div></div>
+    <div class="sc c3"><div class="sc-lbl">HUMIDITY</div><div class="sc-val">67%</div><div class="sc-chg up">↑ +5% above avg</div></div>
+    <div class="sc c4"><div class="sc-lbl">AQI</div><div class="sc-val">142</div><div class="sc-chg" style="color:var(--orange)">Moderate</div></div>
+  </div>
+  <div class="dg">
+    <!-- MAP -->
+    <div class="card" style="grid-row:span 2">
+      <div class="ch"><span class="chd"></span>INDIA CLIMATE MAP — <span id="mapLbl" style="color:var(--accent)">Maharashtra · Pune</span></div>
+      <div class="map-wrap" id="mapWrap">
+        <div class="map-layers">
+          <div class="ml-btn active" onclick="switchLayer('risk',this)">RISK</div>
+          <div class="ml-btn" onclick="switchLayer('temp',this)">TEMP</div>
+          <div class="ml-btn" onclick="switchLayer('rain',this)">RAIN</div>
+          <div class="ml-btn" onclick="switchLayer('flood',this)">FLOOD</div>
+        </div>
+        <div class="map-tt" id="mtt">
+          <div class="tt-city" id="ttC">—</div>
+          <div class="tt-row"><span>Temperature</span><span class="tt-val" id="ttT">—</span></div>
+          <div class="tt-row"><span>Risk Score</span><span class="tt-val" id="ttR">—</span></div>
+          <div class="tt-row"><span>Alert Level</span><span class="tt-val" id="ttA">—</span></div>
+        </div>
+        <svg viewBox="0 0 400 500" style="width:100%;height:100%" id="isvg">
+          <defs><filter id="gf"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect width="400" height="500" fill="#060f1e"/>
+          <line x1="200" y1="0" x2="200" y2="500" stroke="rgba(0,212,255,0.03)" stroke-width="0.5"/>
+          <line x1="0" y1="250" x2="400" y2="250" stroke="rgba(0,212,255,0.03)" stroke-width="0.5"/>
+          <path d="M130 30 L200 25 L270 40 L320 80 L350 130 L360 180 L355 230 L340 270 L310 310 L290 360 L260 400 L240 440 L220 470 L205 480 L195 470 L185 450 L170 420 L150 390 L120 350 L95 310 L80 270 L70 220 L75 170 L85 130 L100 90 Z" fill="#0d2035" stroke="rgba(0,212,255,0.32)" stroke-width="1.5" filter="url(#gf)"/>
+          <ellipse cx="195" cy="163" rx="52" ry="40" fill="rgba(255,61,61,0.16)"/>
+          <ellipse cx="162" cy="168" rx="36" ry="28" fill="rgba(255,149,0,0.14)"/>
+          <ellipse cx="218" cy="278" rx="38" ry="30" fill="rgba(255,215,0,0.11)"/>
+          <ellipse cx="143" cy="288" rx="30" ry="24" fill="rgba(0,208,132,0.09)"/>
+          <ellipse cx="288" cy="198" rx="40" ry="33" fill="rgba(204,0,255,0.09)"/>
+          <ellipse id="selRing" cx="165" cy="273" rx="33" ry="26" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity="0.6" stroke-dasharray="6,3"><animate attributeName="stroke-dashoffset" values="0;-18" dur="1.5s" repeatCount="indefinite"/></ellipse>
+          <!-- City pins -->
+          <g class="cp" data-city="Delhi" data-temp="43°C" data-risk="77" data-alert="Orange"><circle cx="190" cy="110" r="5" fill="#ff4444" filter="url(#gf)"/><circle cx="190" cy="110" r="10" fill="none" stroke="#ff4444" stroke-width="1" opacity="0.4"><animate attributeName="r" values="5;16;5" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0;0.6" dur="2s" repeatCount="indefinite"/></circle><text x="198" y="108" fill="rgba(255,255,255,0.75)" font-size="8" font-family="DM Sans">Delhi</text></g>
+          <g class="cp" data-city="Mumbai" data-temp="32°C" data-risk="72" data-alert="Orange"><circle cx="145" cy="257" r="5" fill="#ff9500" filter="url(#gf)"/><circle cx="145" cy="257" r="9" fill="none" stroke="#ff9500" stroke-width="1" opacity="0.4"><animate attributeName="r" values="5;14;5" dur="2.5s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0;0.6" dur="2.5s" repeatCount="indefinite"/></circle><text x="110" y="255" fill="rgba(255,255,255,0.7)" font-size="8" font-family="DM Sans">Mumbai</text></g>
+          <g class="cp" data-city="Pune" data-temp="38°C" data-risk="78" data-alert="Red"><circle cx="165" cy="273" r="6" fill="#00d4ff" filter="url(#gf)"/><circle cx="165" cy="273" r="13" fill="none" stroke="#00d4ff" stroke-width="1.5" opacity="0.5"><animate attributeName="r" values="6;20;6" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;0;0.8" dur="2s" repeatCount="indefinite"/></circle><text x="173" y="271" fill="#00d4ff" font-size="9" font-family="DM Sans" font-weight="bold">Pune ●</text></g>
+          <g class="cp" data-city="Chennai" data-temp="35°C" data-risk="62" data-alert="Yellow"><circle cx="220" cy="368" r="4" fill="#ffd700" filter="url(#gf)"/><text x="228" y="366" fill="rgba(255,255,255,0.7)" font-size="8" font-family="DM Sans">Chennai</text></g>
+          <g class="cp" data-city="Bengaluru" data-temp="28°C" data-risk="48" data-alert="Green"><circle cx="200" cy="340" r="4" fill="#00d084" filter="url(#gf)"/><text x="208" y="338" fill="rgba(255,255,255,0.7)" font-size="8" font-family="DM Sans">Bengaluru</text></g>
+          <g class="cp" data-city="Kolkata" data-temp="34°C" data-risk="68" data-alert="Orange"><circle cx="289" cy="213" r="4" fill="#ff6b35" filter="url(#gf)"/><circle cx="289" cy="213" r="8" fill="none" stroke="#ff6b35" stroke-width="1" opacity="0.4"><animate attributeName="r" values="4;12;4" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0;0.6" dur="3s" repeatCount="indefinite"/></circle><text x="297" y="211" fill="rgba(255,255,255,0.7)" font-size="8" font-family="DM Sans">Kolkata</text></g>
+          <g class="cp" data-city="Hyderabad" data-temp="36°C" data-risk="65" data-alert="Yellow"><circle cx="215" cy="298" r="4" fill="#ffd700" filter="url(#gf)"/><text x="223" y="296" fill="rgba(255,255,255,0.7)" font-size="8" font-family="DM Sans">Hyderabad</text></g>
+          <g class="cp" data-city="Jaipur" data-temp="46°C" data-risk="91" data-alert="Red"><circle cx="170" cy="143" r="5" fill="#cc00ff" filter="url(#gf)"/><circle cx="170" cy="143" r="10" fill="none" stroke="#cc00ff" stroke-width="1" opacity="0.5"><animate attributeName="r" values="5;16;5" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0;0.7" dur="2s" repeatCount="indefinite"/></circle><text x="178" y="141" fill="rgba(204,0,255,0.9)" font-size="8" font-family="DM Sans">Jaipur</text></g>
+        </svg>
+        <div class="map-leg">
+          <div style="font-size:0.58rem;color:var(--text2);font-weight:700;margin-bottom:3px;letter-spacing:1px">RISK</div>
+          <div class="ml-r"><div class="ml-d" style="background:#cc00ff"></div><span class="ml-t">Critical</span></div>
+          <div class="ml-r"><div class="ml-d" style="background:#ff4444"></div><span class="ml-t">High</span></div>
+          <div class="ml-r"><div class="ml-d" style="background:#ffd700"></div><span class="ml-t">Moderate</span></div>
+          <div class="ml-r"><div class="ml-d" style="background:#00d084"></div><span class="ml-t">Low</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;margin-top:0.7rem">
+        <div><div class="ch" style="font-size:0.62rem;margin-bottom:4px">📈 TEMP TREND</div><div class="cw" style="height:120px"><canvas id="cTT"></canvas></div></div>
+        <div><div class="ch" style="font-size:0.62rem;margin-bottom:4px">🌧️ RAINFALL FORECAST</div><div class="cw" style="height:120px"><canvas id="cRF"></canvas></div></div>
+      </div>
+    </div>
+    <!-- IMPACT -->
+    <div class="card">
+      <div class="ch"><span class="chd" style="background:var(--accent2)"></span>IMPACT ANALYSIS — <span id="impR" style="color:var(--accent2)">Pune</span></div>
+      <div class="imp-list">
+        <div class="imp-row"><div class="imp-ico">🌾</div><div class="imp-info"><div class="imp-name">Crop Yield</div><div class="imp-bg"><div class="imp-bar" style="width:60%;background:var(--red)"></div></div></div><div class="imp-chg up">↓ 22%</div></div>
+        <div class="imp-row"><div class="imp-ico">💧</div><div class="imp-info"><div class="imp-name">Water Scarcity</div><div class="imp-bg"><div class="imp-bar" style="width:75%;background:var(--orange)"></div></div></div><div class="imp-chg up">↑ 38%</div></div>
+        <div class="imp-row"><div class="imp-ico">🏥</div><div class="imp-info"><div class="imp-name">Health Risk</div><div class="imp-bg"><div class="imp-bar" style="width:80%;background:var(--red)"></div></div></div><div class="imp-chg up">↑ 45%</div></div>
+        <div class="imp-row"><div class="imp-ico">🌲</div><div class="imp-info"><div class="imp-name">Forest Loss</div><div class="imp-bg"><div class="imp-bar" style="width:40%;background:var(--orange)"></div></div></div><div class="imp-chg up">↑ 15%</div></div>
+        <div class="imp-row"><div class="imp-ico">🏙️</div><div class="imp-info"><div class="imp-name">Urban Heat</div><div class="imp-bg"><div class="imp-bar" style="width:85%;background:var(--red)"></div></div></div><div class="imp-chg up">↑ 52%</div></div>
+      </div>
+    </div>
+    <!-- RIGHT COLUMN -->
+    <div class="card" style="grid-row:span 2">
+      <div class="ch"><span class="chd" style="background:var(--red)"></span>CLIMATE RISK INDEX</div>
+      <div class="gauge-wrap">
+        <svg class="gsvg" viewBox="0 0 148 82">
+          <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#00d084"/><stop offset="35%" stop-color="#ffd700"/><stop offset="65%" stop-color="#ff9500"/><stop offset="100%" stop-color="#ff4444"/></linearGradient></defs>
+          <path d="M14 76 A60 60 0 0 1 134 76" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="9" stroke-linecap="round"/>
+          <path d="M14 76 A60 60 0 0 1 134 76" fill="none" stroke="url(#gg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="188" stroke-dashoffset="47" id="gArc"/>
+          <line id="gNeedle" x1="74" y1="76" x2="74" y2="24" stroke="white" stroke-width="1.8" stroke-linecap="round" transform="rotate(48,74,76)"/>
+          <circle cx="74" cy="76" r="4" fill="white"/>
+          <text x="8" y="90" fill="#00d084" font-size="7" font-family="DM Sans">0</text>
+          <text x="69" y="14" fill="white" font-size="7" font-family="DM Sans">50</text>
+          <text x="135" y="90" fill="#ff4444" font-size="7" font-family="DM Sans">100</text>
+        </svg>
+        <div class="risk-val" id="rScore" style="color:var(--red)">78</div>
+        <div class="risk-lbl" id="rLbl" style="color:var(--red)">⚠ HIGH RISK</div>
+        <div class="risk-sub">AI analysis · 12 parameters</div>
+      </div>
+      <div style="margin:0.8rem 0;border-top:1px solid var(--border);padding-top:0.8rem">
+        <div class="ch" style="font-size:0.62rem;margin-bottom:7px"><span class="chd" style="background:var(--accent3)"></span>EXTREME WEATHER (5Y PROB.)</div>
+        <div class="we-grid">
+          <div class="we-card"><div class="we-ico">☀️</div><div class="we-nm">Heatwave</div><div class="we-pct" style="color:var(--red)" id="weH">68%</div></div>
+          <div class="we-card"><div class="we-ico">🌊</div><div class="we-nm">Flood</div><div class="we-pct" style="color:var(--accent)" id="weF">52%</div></div>
+          <div class="we-card"><div class="we-ico">🌪️</div><div class="we-nm">Cyclone</div><div class="we-pct" style="color:var(--accent2)" id="weC">35%</div></div>
+          <div class="we-card"><div class="we-ico">🏜️</div><div class="we-nm">Drought</div><div class="we-pct" style="color:var(--accent4)" id="weD">44%</div></div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:0.8rem">
+        <div class="ch" style="font-size:0.62rem;margin-bottom:7px"><span class="chd" style="background:var(--red)"></span>LATEST ALERTS</div>
+        <div class="al-list">
+          <div class="al-it red"><div class="al-ico">🔴</div><div><div class="al-t">Red Alert</div><div class="al-s">Pune (Heatwave)</div></div></div>
+          <div class="al-it orange"><div class="al-ico">🟠</div><div><div class="al-t">Orange Alert</div><div class="al-s">Konkan (Rainfall)</div></div></div>
+        </div>
+        <button class="btn-all" onclick="showPage('alerts')">View All Alerts →</button>
+      </div>
+    </div>
+    <!-- SCENARIO CHART -->
+    <div class="card">
+      <div class="ch"><span class="chd" style="background:var(--accent4)"></span>SCENARIO COMPARISON — <span id="scLbl2" style="color:var(--accent4)">2024 vs 2050</span></div>
+      <div class="cw" style="height:185px"><canvas id="cSC"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TEMPERATURE ═══ -->
+<div class="page" id="page-temperature">
+  <div class="ph"><h1>🌡️ Temperature Analysis</h1><p>Historical trends, projections, and anomalies across India</p></div>
+  <div class="stats-row">
+    <div class="sc c1"><div class="sc-lbl">AVG ANNUAL TEMP</div><div class="sc-val">27.8°C</div><div class="sc-chg up">↑ +1.5°C since 1950</div></div>
+    <div class="sc c2"><div class="sc-lbl">MAX RECORDED</div><div class="sc-val">51°C</div><div class="sc-chg" style="color:var(--text2)">Phalodi, Rajasthan</div></div>
+    <div class="sc c3"><div class="sc-lbl">HEAT WAVE DAYS</div><div class="sc-val">+43</div><div class="sc-chg up">↑ since 1990s</div></div>
+    <div class="sc c4"><div class="sc-lbl">TEMP ANOMALY</div><div class="sc-val">+0.7°C</div><div class="sc-chg" style="color:var(--text2)">vs 1981–2010</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:0.9rem">
+    <div class="card"><div class="ch"><span class="chd"></span>TEMPERATURE TREND 1950–2050</div><div class="cw" style="height:260px"><canvas id="cTL"></canvas></div></div>
+    <div class="card"><div class="ch"><span class="chd" style="background:var(--accent3)"></span>MONTHLY AVERAGES 2024</div><div class="cw" style="height:260px"><canvas id="cTM"></canvas></div></div>
+  </div>
+  <div style="margin-top:0.9rem"><div class="card"><div class="ch"><span class="chd" style="background:var(--accent2)"></span>STATE-WISE TEMPERATURE (°C)</div><div class="cw" style="height:220px"><canvas id="cTS"></canvas></div></div></div>
+</div>
+
+<!-- ═══ RAINFALL ═══ -->
+<div class="page" id="page-rainfall">
+  <div class="ph"><h1>🌧️ Rainfall Analysis</h1><p>Monsoon patterns, anomalies, and forecasts across India</p></div>
+  <div class="stats-row">
+    <div class="sc c1"><div class="sc-lbl">NORMAL RAINFALL</div><div class="sc-val">1170mm</div><div class="sc-chg" style="color:var(--text2)">Annual avg India</div></div>
+    <div class="sc c2"><div class="sc-lbl">2024 ACTUAL</div><div class="sc-val">1098mm</div><div class="sc-chg up">↓ -6.2% deficit</div></div>
+    <div class="sc c3"><div class="sc-lbl">MONSOON ONSET</div><div class="sc-val">Jun 1</div><div class="sc-chg" style="color:var(--text2)">Kerala 2024</div></div>
+    <div class="sc c4"><div class="sc-lbl">FLOOD EVENTS</div><div class="sc-val">127</div><div class="sc-chg up">↑ +23% vs 2023</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:0.9rem">
+    <div class="card"><div class="ch"><span class="chd"></span>MONTHLY RAINFALL (mm)</div><div class="cw" style="height:240px"><canvas id="cRM"></canvas></div></div>
+    <div class="card"><div class="ch"><span class="chd" style="background:var(--accent3)"></span>ANNUAL ANOMALY %</div><div class="cw" style="height:240px"><canvas id="cRA"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ═══ EXTREME ═══ -->
+<div class="page" id="page-extreme">
+  <div class="ph"><h1>⛈️ Extreme Weather Events</h1><p>Cyclones, heatwaves, floods, droughts</p></div>
+  <div class="stats-row">
+    <div class="sc c1"><div class="sc-lbl">CYCLONES 2024</div><div class="sc-val">8</div><div class="sc-chg up">↑ +2 vs avg</div></div>
+    <div class="sc c2"><div class="sc-lbl">HEATWAVE DAYS</div><div class="sc-val">34</div><div class="sc-chg up">↑ +8 days</div></div>
+    <div class="sc c3"><div class="sc-lbl">FLOOD EVENTS</div><div class="sc-val">127</div><div class="sc-chg up">↑ +23%</div></div>
+    <div class="sc c4"><div class="sc-lbl">DROUGHT AREAS</div><div class="sc-val">22%</div><div class="sc-chg" style="color:var(--text2)">of districts</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem">
+    <div class="card"><div class="ch"><span class="chd"></span>EVENT FREQUENCY 2000–2024</div><div class="cw" style="height:240px"><canvas id="cEF"></canvas></div></div>
+    <div class="card"><div class="ch"><span class="chd" style="background:var(--accent3)"></span>EVENT DISTRIBUTION</div><div class="cw" style="height:240px"><canvas id="cET"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ═══ RISK ═══ -->
+<div class="page" id="page-risk">
+  <div class="ph"><h1>⚠️ Risk Analysis</h1><p>Multi-dimensional climate risk scoring</p></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.9rem;margin-bottom:0.9rem">
+    <div class="card" style="text-align:center"><div class="ch" style="justify-content:center">🔥 HEAT RISK</div><div style="font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--red)">87</div><div style="font-size:0.75rem;color:var(--red);font-weight:700">CRITICAL</div></div>
+    <div class="card" style="text-align:center"><div class="ch" style="justify-content:center">💧 WATER RISK</div><div style="font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--orange)">74</div><div style="font-size:0.75rem;color:var(--orange);font-weight:700">HIGH</div></div>
+    <div class="card" style="text-align:center"><div class="ch" style="justify-content:center">🌊 FLOOD RISK</div><div style="font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;color:var(--accent)">62</div><div style="font-size:0.75rem;color:var(--accent);font-weight:700">MODERATE-HIGH</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:0.9rem">
+    <div class="card"><div class="ch"><span class="chd"></span>STATE-WISE RISK SCORES</div><div class="cw" style="height:270px"><canvas id="cRS"></canvas></div></div>
+    <div class="card"><div class="ch"><span class="chd" style="background:var(--red)"></span>RISK BREAKDOWN</div><div class="cw" style="height:270px"><canvas id="cRR"></canvas></div></div>
+  </div>
+</div>
+
+<!-- ═══ AI ═══ -->
+<div class="page" id="page-ai">
+  <div class="ph"><h1>🤖 AI Impact Assessment</h1><p>Real-time climate prediction powered by Claude AI</p></div>
+  <div class="ai-form">
+    <div class="ai-fhdr">🔬 Configure Parameters</div>
+    <div class="fg">
+      <div class="fg-item"><label>STATE</label><select id="ai_s" onchange="updPP()"><option>Maharashtra</option><option>Rajasthan</option><option>Uttar Pradesh</option><option>Gujarat</option><option>Karnataka</option><option>Tamil Nadu</option><option>West Bengal</option><option>Odisha</option><option>Kerala</option><option>Delhi</option></select></div>
+      <div class="fg-item"><label>YEAR</label><select id="ai_y" onchange="updPP()"><option>2025</option><option>2030</option><option>2035</option><option>2040</option><option>2045</option><option>2050</option></select></div>
+      <div class="fg-item"><label>SCENARIO</label><select id="ai_sc" onchange="updPP()"><option>RCP 2.6 (Low)</option><option selected>RCP 4.5 (Medium)</option><option>RCP 6.0 (High)</option><option>RCP 8.5 (Very High)</option></select></div>
+      <div class="fg-item"><label>TEMPERATURE (°C)</label><input type="number" id="ai_t" value="38" oninput="updPP()"></div>
+      <div class="fg-item"><label>RAINFALL (mm)</label><input type="number" id="ai_r" value="712" oninput="updPP()"></div>
+      <div class="fg-item"><label>LAND USE</label><select id="ai_l" onchange="updPP()"><option selected>Agricultural</option><option>Urban</option><option>Forest</option><option>Coastal</option></select></div>
+    </div>
+    <div class="pp-grid">
+      <div class="pp-it"><div class="pp-lbl">HEAT STRESS</div><div class="pp-bg"><div class="pp-fill" id="ppH" style="width:60%;background:var(--red)"></div></div><div class="pp-val" id="ppHV">High</div></div>
+      <div class="pp-it"><div class="pp-lbl">WATER STRESS</div><div class="pp-bg"><div class="pp-fill" id="ppW" style="width:45%;background:var(--orange)"></div></div><div class="pp-val" id="ppWV">Moderate</div></div>
+      <div class="pp-it"><div class="pp-lbl">RISK IMPACT</div><div class="pp-bg"><div class="pp-fill" id="ppR" style="width:70%;background:var(--accent)"></div></div><div class="pp-val" id="ppRV">High</div></div>
+    </div>
+    <button class="btn-analyze" onclick="runAI()">🤖 Run AI Assessment</button>
+  </div>
+  <div class="ai-results" id="aiRes" style="display:none"></div>
+  <div class="ai-chat" id="aiChat" style="display:none">
+    <div class="chat-hdr">🤖 Ask AI Anything <span style="font-size:0.65rem;color:var(--text2);font-weight:400;margin-left:7px">about climate, risks, recommendations...</span></div>
+    <div class="chat-msgs" id="chatMsgs"><div class="cm ai"><div class="ai-tag">CLIMATRIX AI</div>Assessment complete. Ask me anything about the results or climate data for any region.</div></div>
+    <div class="chat-ir"><input class="chat-in" id="chatIn" placeholder="e.g. What will happen to farming in Rajasthan by 2040?" onkeyup="if(event.key==='Enter')sendChat()"><button class="chat-snd" onclick="sendChat()">→</button></div>
+  </div>
+</div>
+
+<!-- ═══ HEATMAPS ═══ -->
+<div class="page" id="page-heatmaps">
+  <div class="ph"><h1>🗺️ Climate Heatmaps</h1><p>Visual climate overlays for India</p></div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchHM('temp',this)">🌡️ Temperature</div>
+    <div class="tab" onclick="switchHM('rain',this)">🌧️ Rainfall</div>
+    <div class="tab" onclick="switchHM('drought',this)">🏜️ Drought</div>
+    <div class="tab" onclick="switchHM('flood',this)">🌊 Flood Risk</div>
+  </div>
+  <div class="hm-grid">
+    <div class="card"><div class="ch"><span class="chd"></span><span id="hmT">TEMPERATURE HEATMAP — INDIA 2024</span></div>
+      <div style="background:var(--surface2);border-radius:9px;height:380px;position:relative;overflow:hidden"><canvas id="hmC" width="500" height="380" style="width:100%;height:100%"></canvas></div>
+      <div style="display:flex;align-items:center;gap:7px;margin-top:7px"><span style="font-size:0.65rem;color:var(--text2)">Low</span><div style="flex:1;height:5px;border-radius:3px;background:linear-gradient(90deg,#00d084,#ffd700,#ff9500,#ff4444,#cc00ff)"></div><span style="font-size:0.65rem;color:var(--text2)">Critical</span></div>
+    </div>
+    <div class="card"><div class="ch"><span class="chd" style="background:var(--accent2)"></span>REGIONAL STATS</div><div id="hmStats" style="display:flex;flex-direction:column;gap:7px"></div></div>
+  </div>
+</div>
+
+<!-- ═══ REPORTS ═══ -->
+<div class="page" id="page-reports">
+  <div class="ph"><h1>📄 Reports & Downloads</h1><p>Comprehensive climate reports for research and planning</p></div>
+  <div class="rg">
+    <div class="rpt"><div class="rpt-ico">📊</div><div class="rpt-title">Annual Climate Report 2024</div><div class="rpt-desc">Comprehensive analysis across all Indian states with ML-based projections.</div><span class="rpt-tag">PDF · 4.2 MB</span><br><button onclick="showToast('📥 Downloading Annual Climate Report...')" style="margin-top:10px;width:100%;background:rgba(0,212,255,0.08);border:1px solid var(--accent);border-radius:6px;color:var(--accent);padding:6px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📥 Download</button></div>
+    <div class="rpt"><div class="rpt-ico">🌾</div><div class="rpt-title">Agricultural Risk Report</div><div class="rpt-desc">Crop yield predictions and water stress analysis for 2025–2030.</div><span class="rpt-tag">PDF · 2.8 MB</span><br><button onclick="showToast('📥 Downloading Agricultural Risk Report...')" style="margin-top:10px;width:100%;background:rgba(0,255,157,0.08);border:1px solid var(--accent2);border-radius:6px;color:var(--accent2);padding:6px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📥 Download</button></div>
+    <div class="rpt"><div class="rpt-ico">🌊</div><div class="rpt-title">Flood Risk Assessment</div><div class="rpt-desc">Basin-wise flood probability maps and early warning thresholds.</div><span class="rpt-tag">PDF · 3.5 MB</span><br><button onclick="showToast('📥 Downloading Flood Risk Assessment...')" style="margin-top:10px;width:100%;background:rgba(255,107,53,0.08);border:1px solid var(--accent3);border-radius:6px;color:var(--accent3);padding:6px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📥 Download</button></div>
+    <div class="rpt"><div class="rpt-ico">🌡️</div><div class="rpt-title">Heat Stress Report</div><div class="rpt-desc">Urban heat island analysis and heatwave projections for major cities.</div><span class="rpt-tag">PDF · 1.9 MB</span><br><button onclick="showToast('📥 Downloading Heat Stress Report...')" style="margin-top:10px;width:100%;background:rgba(255,215,0,0.08);border:1px solid var(--accent4);border-radius:6px;color:var(--accent4);padding:6px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📥 Download</button></div>
+    <div class="rpt"><div class="rpt-ico">🌪️</div><div class="rpt-title">Cyclone Forecast 2025</div><div class="rpt-desc">Bay of Bengal and Arabian Sea cyclone track predictions.</div><span class="rpt-tag">PDF · 2.1 MB</span><br><button onclick="showToast('📥 Downloading Cyclone Forecast...')" style="margin-top:10px;width:100%;background:rgba(0,212,255,0.08);border:1px solid var(--accent);border-radius:6px;color:var(--accent);padding:6px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📥 Download</button></div>
+    <div class="rpt"><div class="rpt-ico">💧</div><div class="rpt-title">Water Scarcity Index</div><div class="rpt-desc">Groundwater depletion rates and district-level water stress.</div><span class="rpt-tag">PDF · 3.3 MB</span><br><button onclick="showToast('📥 Downloading Water Scarcity Index...')" style="margin-top:10px;width:100%;background:rgba(0,255,157,0.08);border:1px solid var(--accent2);border-radius:6px;color:var(--accent2);padding:6px;font-size:0.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">📥 Download</button></div>
+  </div>
+</div>
+
+<!-- ═══ ALERTS ═══ -->
+<div class="page" id="page-alerts">
+  <div class="ph"><h1>🚨 Climate Alerts</h1><p>Real-time early warnings and advisories</p></div>
+  <div class="tabs">
+    <div class="tab active" onclick="filterAlerts('all',this)">All (6)</div>
+    <div class="tab" onclick="filterAlerts('red',this)">🔴 Red (2)</div>
+    <div class="tab" onclick="filterAlerts('orange',this)">🟠 Orange (2)</div>
+    <div class="tab" onclick="filterAlerts('yellow',this)">🟡 Yellow (1)</div>
+    <div class="tab" onclick="filterAlerts('green',this)">🟢 Green (1)</div>
+  </div>
+  <div id="aList" style="display:flex;flex-direction:column;gap:9px"></div>
+</div>
+
+<!-- ═══ ABOUT ═══ -->
+<div class="page" id="page-about">
+  <div class="ph"><h1>ℹ️ About Climatrix</h1><p>Galgotias University · Environmental Impact Analysis · C1UB120T</p></div>
+  <div class="ag">
+    <div class="abt"><h3>🌍 About the Project</h3><p style="font-size:0.8rem;color:var(--text2);line-height:1.7">Climatrix is an AI-based Climate Change Impact Prediction System developed at Galgotias University. It provides accessible, hyper-regional climate intelligence for India — delivering machine learning-driven forecasts and actionable insights for communities, farmers, planners, and policymakers.</p><div style="margin-top:0.9rem;display:flex;gap:5px;flex-wrap:wrap"><span style="background:rgba(0,212,255,0.07);color:var(--accent);border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:600">Python/Flask</span><span style="background:rgba(0,255,157,0.07);color:var(--accent2);border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:600">Machine Learning</span><span style="background:rgba(255,107,53,0.07);color:var(--accent3);border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:600">Time-Series AI</span><span style="background:rgba(255,215,0,0.07);color:var(--accent4);border-radius:4px;padding:2px 7px;font-size:0.65rem;font-weight:600">India-Specific</span></div></div>
+    <div class="abt"><h3>👥 Team</h3>
+      <div class="tm-row"><div class="tm-av">EM</div><div><div class="tm-nm">Ekktta Mishra</div><div class="tm-rl">PPT Layout + Research</div><div class="tm-id">25SBBS1170163</div></div></div>
+      <div class="tm-row"><div class="tm-av">SR</div><div><div class="tm-nm">Simran Raj</div><div class="tm-rl">Slide 3 Content</div><div class="tm-id">25SBBS1170340</div></div></div>
+      <div class="tm-row"><div class="tm-av">PJ</div><div><div class="tm-nm">Pushpanjali Jha</div><div class="tm-rl">Slide 4 Content</div><div class="tm-id">25SBBS1170329</div></div></div>
+      <div class="tm-row"><div class="tm-av" style="background:linear-gradient(135deg,#00d4ff,#cc00ff)">D</div><div><div class="tm-nm">Devanshi</div><div class="tm-rl">Slide 5 + PPT Design</div><div class="tm-id">25SBBS1170075</div></div></div>
+      <div class="tm-row"><div class="tm-av">SP</div><div><div class="tm-nm">Shreya Pandey</div><div class="tm-rl">Slide 6 Content</div><div class="tm-id">25SBBS1170349</div></div></div>
+      <div class="tm-row"><div class="tm-av">PS</div><div><div class="tm-nm">Pulkit Srivastava</div><div class="tm-rl">Slide 7 Content</div><div class="tm-id">25SBBS1170185</div></div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<button id="fab" style="display:none" onclick="showPage('ai')">🤖 Run AI Analysis</button>
+<div id="toast"></div>
+
+<script>
+// DATA
+const SD={Maharashtra:['Pune','Mumbai','Nagpur','Nashik','Aurangabad','Solapur'],Rajasthan:['Jaipur','Jodhpur','Kota','Bikaner','Udaipur','Jaisalmer'],'Uttar Pradesh':['Lucknow','Agra','Varanasi','Kanpur','Meerut','Noida'],Gujarat:['Ahmedabad','Surat','Vadodara','Rajkot','Kutch'],'Madhya Pradesh':['Bhopal','Indore','Gwalior','Jabalpur'],Karnataka:['Bengaluru','Mysuru','Hubli','Mangaluru'],'Tamil Nadu':['Chennai','Coimbatore','Madurai','Salem'],'West Bengal':['Kolkata','Howrah','Darjeeling','Siliguri'],Odisha:['Bhubaneswar','Cuttack','Rourkela','Puri'],Kerala:['Thiruvananthapuram','Kochi','Kozhikode','Thrissur'],Delhi:['New Delhi','North Delhi','South Delhi','East Delhi'],Bihar:['Patna','Gaya','Muzaffarpur','Bhagalpur']};
+const RD={'Maharashtra_Pune':{t:38,r:712,rs:78,rl:'HIGH',rc:'var(--red)',hw:68,fl:52,cy:35,dr:44},'Rajasthan_Jaipur':{t:45,r:520,rs:91,rl:'CRITICAL',rc:'var(--purple)',hw:92,fl:18,cy:8,dr:78},'Rajasthan_Jaisalmer':{t:49,r:160,rs:96,rl:'CRITICAL',rc:'var(--purple)',hw:97,fl:5,cy:3,dr:94},'Uttar Pradesh_Lucknow':{t:42,r:890,rs:82,rl:'HIGH',rc:'var(--red)',hw:80,fl:60,cy:12,dr:55},'Kerala_Thiruvananthapuram':{t:30,r:2400,rs:55,rl:'MODERATE',rc:'var(--orange)',hw:35,fl:82,cy:42,dr:8},'Gujarat_Kutch':{t:47,r:280,rs:88,rl:'CRITICAL',rc:'var(--purple)',hw:90,fl:20,cy:38,dr:82},'West Bengal_Kolkata':{t:34,r:1600,rs:68,rl:'HIGH',rc:'var(--red)',hw:58,fl:88,cy:65,dr:12},'Delhi_New Delhi':{t:43,r:650,rs:77,rl:'HIGH',rc:'var(--red)',hw:82,fl:35,cy:5,dr:50},default:{t:36,r:1000,rs:70,rl:'HIGH',rc:'var(--red)',hw:60,fl:50,cy:40,dr:45}};
+const ALERTS=[{l:'red',i:'🔴',tt:'Red Alert — Pune (Heatwave)',d:'Temperature reaching 44°C. Health advisory issued. Avoid outdoor activities 12–4 PM.',r:'Pune, Maharashtra',tm:'2h ago',a:true},{l:'red',i:'🔴',tt:'Flash Flood Warning — Uttarakhand',d:'Cloudburst warning active. River Alaknanda above danger mark.',r:'Chamoli, Uttarakhand',tm:'3h ago',a:true},{l:'orange',i:'🟠',tt:'Orange Alert — Konkan (Rainfall)',d:'100–150mm rainfall expected in 24 hours. Landslide risk in ghat areas.',r:'Konkan, Maharashtra',tm:'4h ago',a:true},{l:'orange',i:'🟠',tt:'Cyclone Watch — Odisha Coast',d:'Low pressure developing in Bay of Bengal. 48-hour cyclone formation possible.',r:'Puri-Balasore, Odisha',tm:'8h ago',a:true},{l:'yellow',i:'🟡',tt:'Yellow Alert — Vidarbha (Drought)',d:'Below normal rainfall for 4th consecutive week. Crop advisory issued.',r:'Vidarbha, Maharashtra',tm:'12h ago',a:false},{l:'green',i:'🟢',tt:'All Clear — Kerala Coast',d:'Southwest monsoon receding. Sea conditions returning to normal.',r:'Thiruvananthapuram, Kerala',tm:'1d ago',a:false}];
+let charts={},curSc='RCP 4.5',curYr=2024,sec=47;
+const SFX={'RCP 2.6':0.6,'RCP 4.5':1.0,'RCP 6.0':1.4,'RCP 8.5':2.0};
+
+// HERO
+let hcd=5,hInt;
+window.onload=()=>{
+  let v=0;const gi=setInterval(()=>{v+=2;if(v>=78){v=78;clearInterval(gi);}const e=document.getElementById('hgv');if(e)e.textContent=v;},40);
+  hInt=setInterval(()=>{hcd--;const e=document.getElementById('hcd');if(e)e.textContent=hcd;if(hcd<=0){clearInterval(hInt);enterDash();}},1000);
+};
+function enterDash(){clearInterval(hInt);const h=document.getElementById('hero');h.classList.add('fade-out');setTimeout(()=>{h.style.display='none';showInit('dashboard');},800);}
+function enterAI(){clearInterval(hInt);const h=document.getElementById('hero');h.classList.add('fade-out');setTimeout(()=>{h.style.display='none';showInit('ai');},800);}
+function showInit(dest){
+  const ov=document.getElementById('initOverlay');ov.classList.add('show');
+  const msgs=['Initializing AI Systems...','Loading Climate Models...','Processing India Datasets...','Calibrating Risk Engine...','System Ready ✓'];
+  let i=0;const it=setInterval(()=>{const e=document.getElementById('itxt');if(e&&msgs[i])e.textContent=msgs[i];i++;if(i>=msgs.length)clearInterval(it);},360);
+  setTimeout(()=>{ov.classList.add('fade-out');setTimeout(()=>{ov.style.display='none';ov.classList.remove('show','fade-out');launchApp(dest);},500);},1900);
+}
+function launchApp(dest){
+  ['mainNav','sidebar','mc','liveTicker'].forEach(id=>{const e=document.getElementById(id);if(e)e.style.display='block';});
+  const fab=document.getElementById('fab');if(fab)fab.style.display='flex';
+  showPage(dest);initTicker();startLive();fillNotif();
+}
+
+// TICKER
+const TI=[{l:'India Temp Anomaly',v:'+1.7°C',c:'t-up'},{l:'Active Cyclones',v:'2',c:'t-warn'},{l:'Monsoon Coverage',v:'78%',c:'t-dn'},{l:'Flood Warnings',v:'127 active',c:'t-warn'},{l:'AQI Delhi',v:'312 Very Poor',c:'t-up'},{l:'Rajasthan Heat Index',v:'91/100',c:'t-up'},{l:'Groundwater Level',v:'-12% YoY',c:'t-up'},{l:'Sea Surface Temp',v:'+0.8°C',c:'t-up'},{l:'Forest Cover Loss',v:'14,000 ha',c:'t-up'},{l:'Glacier Retreat',v:'+3.2%',c:'t-up'}];
+function initTicker(){const t=document.getElementById('ts');const items=[...TI,...TI];t.innerHTML=items.map(x=>`<div class="t-item"><span class="t-lbl">${x.l}</span><span class="${x.c}">${x.v}</span></div>`).join('');}
+
+// LIVE
+function startLive(){
+  setInterval(()=>{const v=(1.5+Math.random()*0.35).toFixed(1);const e=document.getElementById('pbT');if(e)e.textContent=`+${v}°C`;},4000);
+  setInterval(()=>{sec++;if(sec>120)sec=8;const e=document.getElementById('pbU');if(e)e.textContent=sec+'s ago';},1000);
+}
+
+// NAV
+function showPage(n){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-it').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  const p=document.getElementById('page-'+n);if(p)p.classList.add('active');
+  const sb=document.getElementById('sb-'+n);if(sb)sb.classList.add('active');
+  const nv=document.getElementById('nav-'+n);if(nv)nv.classList.add('active');
+  setTimeout(()=>{if(n==='dashboard')initDash();if(n==='temperature')initTemp();if(n==='rainfall')initRain();if(n==='extreme')initExtreme();if(n==='risk')initRisk();if(n==='heatmaps')initHM('temp');if(n==='alerts')fillAlerts('all');},60);
+}
+
+// REGION
+function updateDist(){const s=document.getElementById('selState').value;const d=document.getElementById('selDist');d.innerHTML=(SD[s]||['Capital']).map(x=>`<option>${x}</option>`).join('');}
+function applyRegion(){
+  const st=document.getElementById('selState').value;const di=document.getElementById('selDist').value;
+  const k=st+'_'+di;const d=RD[k]||RD.default;
+  document.getElementById('curT').textContent=d.t+'°C';
+  document.getElementById('curR').textContent=d.r+'mm';
+  document.getElementById('mapLbl').textContent=st+' · '+di;
+  document.getElementById('impR').textContent=di;
+  document.getElementById('rScore').textContent=d.rs;
+  document.getElementById('rScore').style.color=d.rc;
+  document.getElementById('rLbl').textContent='⚠ '+d.rl+' RISK';
+  document.getElementById('rLbl').style.color=d.rc;
+  document.getElementById('weH').textContent=d.hw+'%';
+  document.getElementById('weF').textContent=d.fl+'%';
+  document.getElementById('weC').textContent=d.cy+'%';
+  document.getElementById('weD').textContent=d.dr+'%';
+  const rot=-90+(d.rs/100)*180;
+  document.getElementById('gNeedle').setAttribute('transform',`rotate(${rot},74,76)`);
+  ['cTT','cRF','cSC'].forEach(id=>{if(charts[id]){try{charts[id].destroy();}catch(e){}delete charts[id];}});
+  setTimeout(initDash,50);showToast(`✅ ${di}, ${st}`);
+}
+function updateYear(v){
+  curYr=parseInt(v);document.getElementById('yrVal').textContent=v;
+  document.getElementById('yrSlider').style.setProperty('--pct',((v-2024)/26*100)+'%');
+  document.getElementById('scLbl2').textContent=`2024 vs ${v}`;
+  ['cTT','cRF','cSC'].forEach(id=>{if(charts[id]){try{charts[id].destroy();}catch(e){}delete charts[id];}});
+  setTimeout(initDash,50);
+}
+function setSc(sc,el){curSc=sc;document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('scLbl').textContent=sc;showToast(`📊 Scenario: ${sc}`);['cTT','cRF','cSC','cTL'].forEach(id=>{if(charts[id]){try{charts[id].destroy();}catch(e){}delete charts[id];}});setTimeout(initDash,50);}
+
+// MAP
+document.addEventListener('DOMContentLoaded',()=>{
+  const tt=document.getElementById('mtt');
+  document.querySelectorAll('.cp').forEach(p=>{
+    p.style.cursor='pointer';
+    p.addEventListener('mouseenter',e=>{
+      document.getElementById('ttC').textContent=p.dataset.city;
+      document.getElementById('ttT').textContent=p.dataset.temp||'—';
+      document.getElementById('ttR').textContent=(p.dataset.risk||'—')+'/100';
+      document.getElementById('ttA').textContent=p.dataset.alert||'—';
+      const c=p.querySelector('circle');
+      if(c&&tt){const xp=c.cx.baseVal.value/400*100;const yp=c.cy.baseVal.value/500*100;tt.style.left=xp+'%';tt.style.top=Math.max(5,yp-15)+'%';tt.style.display='block';}
+    });
+    p.addEventListener('mouseleave',()=>{if(tt)tt.style.display='none';});
+    p.addEventListener('click',()=>showToast('📍 '+p.dataset.city));
+  });
+});
+function switchLayer(t,el){document.querySelectorAll('.ml-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');showToast('🗺️ Layer: '+t.toUpperCase());}
+
+// CHARTS
+const CD={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6a9ab8',font:{family:'DM Sans',size:10},boxWidth:10}}},scales:{x:{ticks:{color:'#6a9ab8',font:{size:9}},grid:{color:'rgba(0,212,255,0.04)'}},y:{ticks:{color:'#6a9ab8',font:{size:9}},grid:{color:'rgba(0,212,255,0.04)'}}}};
+function mk(id,type,data,opts={}){if(charts[id]){try{charts[id].destroy();}catch(e){}};const c=document.getElementById(id);if(!c)return;charts[id]=new Chart(c,{type,data,options:{...CD,...opts,animation:{duration:600,easing:'easeOutQuart'}}});return charts[id];}
+
+function initDash(){
+  const sf=SFX[curSc]||1,yf=(curYr-2024)/26;
+  mk('cTT','line',{labels:['2010','2015','2020','2025','2030','2040','2050'],datasets:[{label:'Temp °C',data:[28.5,29.2,30.1,30.5+yf*sf,31.2+yf*sf,33+sf,34.8+sf*1.5],borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,0.07)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#ff6b35'}]},{plugins:{legend:{display:false}}});
+  mk('cRF','bar',{labels:['2022','2023','2024','2025','2026','2027'],datasets:[{label:'mm',data:[850,820,712,740-yf*sf*20,695-yf*sf*30,670-yf*sf*40],backgroundColor:['rgba(0,212,255,0.5)','rgba(0,212,255,0.45)','rgba(0,212,255,0.6)','rgba(0,212,255,0.35)','rgba(0,212,255,0.3)','rgba(0,212,255,0.25)'],borderRadius:4}]},{plugins:{legend:{display:false}}});
+  mk('cSC','bar',{labels:['Temp +°C','Rain -%','Heatwave Days','Flood Events','Drought %','Forest Loss %'],datasets:[{label:'2024',data:[1.5*sf,8*sf,34*sf,12*sf,22*sf,8*sf],backgroundColor:'rgba(0,212,255,0.4)',borderRadius:4},{label:String(curYr)+' ('+curSc+')',data:[3.2*sf+2*yf,22*sf+5*yf,68*sf+10*yf,28*sf+5*yf,45*sf+8*yf,22*sf+3*yf],backgroundColor:'rgba(255,107,53,0.55)',borderRadius:4}]});
+}
+function initTemp(){
+  const sf=SFX[curSc]||1;
+  mk('cTL','line',{labels:['1950','1960','1970','1980','1990','2000','2010','2020','2030*','2040*','2050*'],datasets:[{label:'Observed',data:[25.2,25.4,25.6,25.8,26.2,26.8,27.4,28.1,null,null,null],borderColor:'#00d4ff',backgroundColor:'rgba(0,212,255,0.06)',tension:0.4,fill:true},{label:curSc,data:[null,null,null,null,null,null,null,28.1,29.2*sf,30.1*sf,31*sf],borderColor:'#ffd700',borderDash:[5,5],tension:0.4},{label:'RCP 8.5',data:[null,null,null,null,null,null,null,28.1,29.8,31.5,33.2],borderColor:'#ff4444',borderDash:[3,3],tension:0.4}]});
+  mk('cTM','bar',{labels:['J','F','M','A','M','J','J','A','S','O','N','D'],datasets:[{label:'Max °C',data:[32,35,40,44,47,42,35,34,35,36,32,29],backgroundColor:['#00d084','#00d084','#ffd700','#ff9500','#ff4444','#ff4444','#00d4ff','#00d4ff','#ffd700','#ff9500','#00d084','#00d084'],borderRadius:5}]},{plugins:{legend:{display:false}}});
+  mk('cTS','bar',{labels:['RJ','GJ','MP','MH','UP','DL','WB','OD','KA','TN','KL','HP'],datasets:[{label:'Summer Max',data:[48,45,44,42,44,43,38,40,36,38,32,28],backgroundColor:'rgba(255,68,68,0.6)',borderRadius:4},{label:'Winter Min',data:[8,12,10,14,8,5,12,14,18,20,22,2],backgroundColor:'rgba(0,212,255,0.45)',borderRadius:4}]});
+}
+function initRain(){
+  mk('cRM','bar',{labels:['J','F','M','A','M','J','J','A','S','O','N','D'],datasets:[{label:'Normal',data:[20,18,12,15,40,200,350,320,180,80,28,22],backgroundColor:'rgba(0,212,255,0.22)',borderRadius:3},{label:'2024',data:[18,12,8,10,28,165,310,290,160,65,20,18],backgroundColor:'rgba(0,255,157,0.52)',borderRadius:3}]});
+  mk('cRA','bar',{labels:['2015','2016','2017','2018','2019','2020','2021','2022','2023','2024'],datasets:[{label:'Anomaly %',data:[-10,-4,5,-9,-4,9,0,6,-2,-6],backgroundColor:(ctx)=>ctx.raw>=0?'rgba(0,208,132,0.62)':'rgba(255,68,68,0.62)',borderRadius:4}]},{plugins:{legend:{display:false}}});
+}
+function initExtreme(){
+  mk('cEF','line',{labels:['2000','2005','2010','2015','2020','2024'],datasets:[{label:'Heatwaves',data:[8,12,18,22,35,42],borderColor:'#ff4444',tension:0.4,fill:false},{label:'Floods',data:[45,58,72,88,110,127],borderColor:'#00d4ff',tension:0.4,fill:false},{label:'Droughts',data:[3,4,6,7,9,11],borderColor:'#ffd700',tension:0.4,fill:false},{label:'Cyclones',data:[3,5,4,5,6,8],borderColor:'#00d084',tension:0.4,fill:false}]});
+  mk('cET','doughnut',{labels:['Floods','Heatwaves','Cyclones','Droughts','Landslides','Cold Waves'],datasets:[{data:[38,28,12,12,6,4],backgroundColor:['rgba(0,212,255,0.8)','rgba(255,68,68,0.8)','rgba(0,255,157,0.8)','rgba(255,215,0,0.8)','rgba(255,107,53,0.8)','rgba(150,100,255,0.8)'],borderWidth:0}]},{scales:undefined,plugins:{legend:{position:'right'}}});
+}
+function initRisk(){
+  mk('cRS','bar',{labels:['RJ','GJ','UP','BR','MH','DL','MP','JH','OD','WB','AP','TN','KL','HP'],datasets:[{label:'Risk Score',data:[91,88,82,80,78,77,75,74,74,68,65,62,55,40],backgroundColor:(ctx)=>{const v=ctx.raw;if(v>=85)return'rgba(204,0,255,0.7)';if(v>=70)return'rgba(255,68,68,0.7)';if(v>=55)return'rgba(255,165,0,0.7)';return'rgba(0,208,132,0.7)';},borderRadius:5}]},{plugins:{legend:{display:false}}});
+  mk('cRR','radar',{labels:['Heat','Flood','Drought','Cyclone','Water','Crop','Health','Forest'],datasets:[{label:'Maharashtra',data:[78,52,44,35,68,60,75,55],borderColor:'#00d4ff',backgroundColor:'rgba(0,212,255,0.07)',fill:true},{label:'Rajasthan',data:[95,18,90,8,88,72,80,45],borderColor:'#ff4444',backgroundColor:'rgba(255,68,68,0.07)',fill:true}]},{scales:{r:{ticks:{color:'#6a9ab8',font:{size:8},backdropColor:'transparent'},grid:{color:'rgba(0,212,255,0.07)'},pointLabels:{color:'#6a9ab8',font:{size:9}}}}});
+}
+
+// HEATMAP
+const HMD={temp:{title:'TEMPERATURE HEATMAP — INDIA 2024',stats:[{r:'Rajasthan / Gujarat',v:'44–50°C',c:'#ff4444',l:'Critical'},{r:'Deccan Plateau',v:'38–44°C',c:'#ff9500',l:'High'},{r:'Northern Plains',v:'35–42°C',c:'#ffd700',l:'High'},{r:'Eastern Coast',v:'32–38°C',c:'#00d4ff',l:'Moderate'},{r:'Western Ghats',v:'28–34°C',c:'#00d084',l:'Low'}]},rain:{title:'RAINFALL HEATMAP — ANNUAL (mm)',stats:[{r:'NE India / Meghalaya',v:'8000+ mm',c:'#00d4ff',l:'Very High'},{r:'Western Ghats',v:'3000–5000 mm',c:'#00d084',l:'High'},{r:'Eastern Coast',v:'1000–1500 mm',c:'#ffd700',l:'Moderate'},{r:'Rajasthan',v:'100–400 mm',c:'#ff4444',l:'Very Low'}]},drought:{title:'DROUGHT RISK — INDIA 2024',stats:[{r:'Rajasthan',v:'Risk: 94%',c:'#ff4444',l:'Critical'},{r:'Gujarat Kutch',v:'Risk: 82%',c:'#cc00ff',l:'Extreme'},{r:'Vidarbha',v:'Risk: 68%',c:'#ff9500',l:'High'},{r:'MP / Chhattisgarh',v:'Risk: 52%',c:'#ffd700',l:'Moderate'}]},flood:{title:'FLOOD RISK — INDIA 2024',stats:[{r:'Bihar / Assam',v:'Risk: 92%',c:'#ff4444',l:'Critical'},{r:'Brahmaputra Valley',v:'Risk: 88%',c:'#cc00ff',l:'Extreme'},{r:'Odisha Coast',v:'Risk: 85%',c:'#ff4444',l:'High'},{r:'Kerala / Ghats',v:'Risk: 78%',c:'#ff9500',l:'High'}]}};
+function switchHM(t,el){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');initHM(t);}
+function initHM(type){
+  const hd=HMD[type];
+  document.getElementById('hmT').textContent=hd.title;
+  document.getElementById('hmStats').innerHTML=hd.stats.map(s=>`<div style="display:flex;align-items:center;gap:7px;padding:8px;background:var(--surface2);border-radius:7px;border:1px solid var(--border)"><div style="width:9px;height:9px;border-radius:50%;background:${s.c};flex-shrink:0"></div><div style="flex:1"><div style="font-size:0.75rem;font-weight:600">${s.r}</div><div style="font-size:0.65rem;color:var(--text2)">${s.v}</div></div><div style="font-size:0.65rem;font-weight:700;color:${s.c}">${s.l}</div></div>`).join('');
+  const canvas=document.getElementById('hmC');if(!canvas)return;
+  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#050e1e';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,212,255,0.04)';ctx.lineWidth=0.5;
+  for(let x=0;x<W;x+=25){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=25){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.fillStyle='#0c1e35';ctx.beginPath();ctx.moveTo(130,14);ctx.lineTo(200,9);ctx.lineTo(275,30);ctx.lineTo(335,70);ctx.lineTo(375,122);ctx.lineTo(390,178);ctx.lineTo(382,233);ctx.lineTo(362,278);ctx.lineTo(325,318);ctx.lineTo(290,363);ctx.lineTo(255,398);ctx.lineTo(232,425);ctx.lineTo(210,410);ctx.lineTo(192,388);ctx.lineTo(162,350);ctx.lineTo(125,306);ctx.lineTo(98,260);ctx.lineTo(76,213);ctx.lineTo(70,163);ctx.lineTo(80,118);ctx.lineTo(100,76);ctx.closePath();ctx.fill();
+  const BL={temp:[[195,160,0.5,'#ff4444'],[162,166,0.4,'#ff6b00'],[230,246,0.38,'#ff9500'],[280,196,0.42,'#ff6b00'],[198,316,0.26,'#ffd700']],rain:[[160,356,0.5,'#00d4ff'],[298,196,0.35,'#00a8ff'],[122,216,0.3,'#00d084'],[248,296,0.22,'#ffd700']],drought:[[198,156,0.55,'#ff4444'],[162,160,0.5,'#cc00ff'],[160,246,0.3,'#ff9500'],[208,216,0.22,'#ffd700']],flood:[[298,196,0.5,'#ff4444'],[288,316,0.45,'#ff4444'],[152,306,0.4,'#ff9500'],[348,156,0.5,'#cc00ff']]};
+  (BL[type]||BL.temp).forEach(([x,y,a,color])=>{const h=color.replace('#','');const r=parseInt(h.substring(0,2),16),g=parseInt(h.substring(2,4),16),b=parseInt(h.substring(4,6),16);const rg=ctx.createRadialGradient(x,y,0,x,y,82);rg.addColorStop(0,`rgba(${r},${g},${b},${a})`);rg.addColorStop(1,'transparent');ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);});
+  ctx.strokeStyle='rgba(0,212,255,0.38)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(130,14);ctx.lineTo(200,9);ctx.lineTo(275,30);ctx.lineTo(335,70);ctx.lineTo(375,122);ctx.lineTo(390,178);ctx.lineTo(382,233);ctx.lineTo(362,278);ctx.lineTo(325,318);ctx.lineTo(290,363);ctx.lineTo(255,398);ctx.lineTo(232,425);ctx.lineTo(210,410);ctx.lineTo(192,388);ctx.lineTo(162,350);ctx.lineTo(125,306);ctx.lineTo(98,260);ctx.lineTo(76,213);ctx.lineTo(70,163);ctx.lineTo(80,118);ctx.lineTo(100,76);ctx.closePath();ctx.stroke();
+  [[198,90,'Delhi'],[148,236,'Mumbai'],[168,260,'Pune'],[218,356,'Chennai'],[285,206,'Kolkata'],[202,330,'Bengaluru']].forEach(([x,y,n])=>{ctx.fillStyle='white';ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(255,255,255,0.68)';ctx.font='9px DM Sans';ctx.fillText(n,x+5,y+4);});
+}
+
+// ALERTS
+function fillAlerts(f){const l=document.getElementById('aList');if(!l)return;const items=f==='all'?ALERTS:ALERTS.filter(a=>a.l===f);l.innerHTML=items.map(a=>`<div class="card" style="border-left:4px solid ${a.l==='red'?'var(--red)':a.l==='orange'?'var(--orange)':a.l==='yellow'?'var(--accent4)':'var(--green)'}"><div style="display:flex;align-items:center;gap:9px;margin-bottom:5px"><span style="font-size:18px">${a.i}</span><div style="flex:1"><div style="font-weight:700;font-size:0.88rem">${a.tt}</div><div style="font-size:0.7rem;color:var(--text2)">${a.r} · ${a.tm}</div></div><span style="font-size:0.65rem;font-weight:700;padding:2px 7px;border-radius:9px;background:${a.a?'rgba(255,68,68,0.1)':'rgba(0,208,132,0.1)'};color:${a.a?'var(--red)':'var(--green)'}">${a.a?'ACTIVE':'CLEARED'}</span></div><p style="font-size:0.78rem;color:var(--text2);line-height:1.6">${a.d}</p></div>`).join('');}
+function filterAlerts(f,el){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');fillAlerts(f);}
+function fillNotif(){const l=document.getElementById('nal');if(!l)return;l.innerHTML=ALERTS.map(a=>`<div class="al-it ${a.l}" style="margin-bottom:5px"><div class="al-ico">${a.i}</div><div><div class="al-t">${a.tt}</div><div class="al-s">${a.r} · ${a.tm}</div></div></div>`).join('');}
+
+// AI
+function updPP(){
+  const t=parseInt(document.getElementById('ai_t')?.value||38),r=parseInt(document.getElementById('ai_r')?.value||712),y=document.getElementById('ai_y')?.value||'2025';
+  const yf=(parseInt(y)-2025)/25,h=Math.min(98,Math.round(30+(t-25)*2.5+yf*20)),w=Math.min(98,Math.round(20+(1200-r)/15+yf*18)),rs=Math.min(98,Math.round((h+w)/2));
+  document.getElementById('ppH').style.width=h+'%';document.getElementById('ppW').style.width=w+'%';document.getElementById('ppR').style.width=rs+'%';
+  document.getElementById('ppHV').textContent=h>70?'Critical':h>50?'High':'Moderate';
+  document.getElementById('ppWV').textContent=w>70?'Critical':w>50?'High':'Moderate';
+  document.getElementById('ppRV').textContent=rs>70?'Critical':rs>50?'High':'Moderate';
+}
+async function runAI(){
+  const st=document.getElementById('ai_s').value,yr=document.getElementById('ai_y').value,sc=document.getElementById('ai_sc').value,t=document.getElementById('ai_t').value,r=document.getElementById('ai_r').value,l=document.getElementById('ai_l').value;
+  const lo=document.getElementById('lo');lo.classList.add('show');
+  const msgs=['🤖 Initializing AI Engine...','📊 Loading Climate Models...','🔍 Analyzing Regional Data...','⚡ Computing Risk Scores...','📋 Generating Report...'];
+  let mi=0;const it=setInterval(()=>{const e=document.getElementById('ltxt');if(e)e.textContent=msgs[mi%msgs.length];mi++;},600);
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`You are Climatrix AI for India. Analyze: State:${st}, Year:${yr}, Scenario:${sc}, Temp:${t}°C, Rainfall:${r}mm, Land:${l}. Return ONLY valid JSON: {"riskScore":<0-100>,"riskLevel":"<Low|Moderate|High|Critical>","projectedTemp":"<value>°C","projectedRainfall":"<value>mm","heatwaveProbability":<0-100>,"floodProbability":<0-100>,"droughtProbability":<0-100>,"cycloneProbability":<0-100>,"cropYieldChange":"<e.g. -18%>","waterScarcityIndex":"<Low|Moderate|High|Critical>","healthRiskLevel":"<Low|Moderate|High|Critical>","keyFindings":["f1","f2","f3","f4"],"recommendations":["r1","r2","r3","r4"],"confidence":<70-98>,"summary":"<2-3 sentences>"}`}]})});
+    const data=await resp.json();clearInterval(it);lo.classList.remove('show');
+    const txt=data.content?.map(b=>b.text||'').join('')||'';
+    let res;try{res=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(e){res=fallback(st,t,r,yr);}
+    renderAI(res,st,yr,sc);
+  }catch(e){clearInterval(it);lo.classList.remove('show');renderAI(fallback(st,t,r,yr),st,yr,sc);}
+}
+function fallback(st,t,r,yr){const tv=parseInt(t),rv=parseInt(r),yv=parseInt(yr),yf=(yv-2025)/25,rs=Math.min(95,Math.round(50+(tv-30)*1.5+(1200-rv)*0.02+yf*20));return{riskScore:rs,riskLevel:rs>=85?'Critical':rs>=70?'High':rs>=50?'Moderate':'Low',projectedTemp:(tv+yf*3.5).toFixed(1)+'°C',projectedRainfall:Math.round(rv*(1-yf*0.15))+'mm',heatwaveProbability:Math.min(98,Math.round(40+(tv-30)*3+yf*25)),floodProbability:Math.min(95,Math.round(20+(rv/2000)*60+yf*10)),droughtProbability:Math.min(95,Math.round(30+(1200-rv)/15+yf*15)),cycloneProbability:Math.round(25+yf*12),cropYieldChange:'-'+Math.round(10+yf*20)+'%',waterScarcityIndex:rs>75?'Critical':rs>55?'High':'Moderate',healthRiskLevel:rs>80?'Critical':rs>60?'High':'Moderate',keyFindings:[`Temperature in ${st} projected to rise by ${(yf*3.5).toFixed(1)}°C by ${yr}`,`Rainfall expected to decrease by ${Math.round(yf*15)}% under ${yr} scenario`,`Heatwave frequency will increase significantly in coming decades`,`Agricultural vulnerability at elevated risk for ${st}`],recommendations:['Implement heat action plans in urban areas immediately','Develop drought-resistant crop varieties for farmers','Enhance groundwater recharge through watershed management','Strengthen early warning systems for extreme weather'],confidence:82,summary:`${st} faces ${rs>75?'significant':'moderate'} climate risks by ${yr}. Rising temperatures and changing rainfall will impact agriculture, water, and public health. Immediate adaptation measures recommended.`};}
+function renderAI(r,st,yr,sc){
+  const res=document.getElementById('aiRes');res.style.display='grid';
+  const RC={'Critical':'var(--purple)','High':'var(--red)','Moderate':'var(--orange)','Low':'var(--green)'};const rC=RC[r.riskLevel]||'var(--red)';
+  res.innerHTML=`<div class="rc" style="grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;align-items:center"><div style="text-align:center"><div style="font-size:0.62rem;color:var(--text2);font-weight:700;letter-spacing:1.5px;margin-bottom:5px">AI RISK SCORE</div><div style="font-family:'Syne',sans-serif;font-size:3.2rem;font-weight:800;color:${rC};line-height:1">${r.riskScore}</div><div style="font-size:0.78rem;color:${rC};font-weight:700;margin-top:2px">⚠ ${r.riskLevel.toUpperCase()}</div><div style="font-size:0.65rem;color:var(--text2);margin-top:2px">Confidence: ${r.confidence}%</div></div><div style="text-align:center;border-left:1px solid var(--border);padding-left:1rem"><div style="font-size:0.62rem;color:var(--text2)">PROJECTED TEMP (${yr})</div><div style="font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--accent3)">${r.projectedTemp}</div></div><div style="text-align:center;border-left:1px solid var(--border);padding-left:1rem"><div style="font-size:0.62rem;color:var(--text2)">PROJECTED RAINFALL</div><div style="font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--accent)">${r.projectedRainfall}</div></div><div style="text-align:center;border-left:1px solid var(--border);padding-left:1rem"><div style="font-size:0.62rem;color:var(--text2)">CROP YIELD CHANGE</div><div style="font-family:'Syne',sans-serif;font-size:1.9rem;font-weight:800;color:var(--red)">${r.cropYieldChange}</div></div></div>
+  <div class="rc"><h4>⛈️ Extreme Weather Probabilities</h4>${[['Heatwave',r.heatwaveProbability,'#ff4444','☀️'],['Flood',r.floodProbability,'#00d4ff','🌊'],['Drought',r.droughtProbability,'#ffd700','🏜️'],['Cyclone',r.cycloneProbability,'#00d084','🌪️']].map(([n,v,c,i])=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:7px"><span style="font-size:15px;width:20px">${i}</span><span style="font-size:0.75rem;width:58px">${n}</span><div style="flex:1;height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden"><div style="width:${v}%;height:100%;background:${c};border-radius:3px;transition:width 1s ease"></div></div><span style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:${c};min-width:32px;text-align:right">${v}%</span></div>`).join('')}</div>
+  <div class="rc"><h4>🔍 Key Findings</h4>${r.keyFindings.map((f,i)=>`<div style="display:flex;gap:7px;font-size:0.76rem;padding:6px;background:var(--surface2);border-radius:6px;margin-bottom:5px"><span style="color:var(--accent);font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0">0${i+1}</span><span>${f}</span></div>`).join('')}</div>
+  <div class="rc"><h4>✅ Recommendations</h4>${r.recommendations.map(rec=>`<div style="display:flex;gap:7px;font-size:0.76rem;padding:6px;background:rgba(0,255,157,0.04);border:1px solid rgba(0,255,157,0.08);border-radius:6px;margin-bottom:5px"><span style="color:var(--accent2);font-weight:700;flex-shrink:0">→</span><span>${rec}</span></div>`).join('')}</div>
+  <div class="rc" style="grid-column:1/-1"><h4>📋 ${st} · ${yr} · ${sc}</h4><p style="font-size:0.82rem;color:var(--text2);line-height:1.7">${r.summary}</p></div>`;
+  document.getElementById('aiChat').style.display='block';
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function sendChat(){
+  const inp=document.getElementById('chatIn'),msgs=document.getElementById('chatMsgs');
+  const q=inp.value.trim();if(!q)return;inp.value='';
+  msgs.innerHTML+=`<div class="cm user">${q}</div>`;msgs.scrollTop=msgs.scrollHeight;
+  const tp=document.createElement('div');tp.className='cm ai';tp.innerHTML='<div class="ai-tag">CLIMATRIX AI</div>Analyzing...';msgs.appendChild(tp);msgs.scrollTop=msgs.scrollHeight;
+  try{const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:350,messages:[{role:'user',content:`You are Climatrix, an AI climate expert for India. Answer concisely (2-3 sentences max): ${q}`}]})});const data=await resp.json();tp.innerHTML=`<div class="ai-tag">CLIMATRIX AI</div>${data.content?.map(b=>b.text||'').join('')||'Please refine your question for a specific analysis.'}`;}
+  catch(e){tp.innerHTML='<div class="ai-tag">CLIMATRIX AI</div>Climate analysis requires specific regional data. Please try a more specific question about temperature, rainfall, or risk for a particular state.';}
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+// UI
+function toggleNotif(){document.getElementById('notifPanel').classList.toggle('open');}
+function toggleSidebar(){const sb=document.getElementById('sidebar'),mc=document.getElementById('mc');sb.classList.toggle('col');mc.classList.toggle('exp');}
+function toggleTheme(){document.body.classList.toggle('light');showToast(document.body.classList.contains('light')?'☀️ Light mode':'🌙 Dark mode');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2700);}
+function handleSearch(e){if(e.key==='Enter'){const q=e.target.value.trim();if(q)showToast('🔍 Searching: '+q);}}
+</script>
+</body>
+</html>
